@@ -47,11 +47,12 @@ function Navbar({setView}) {
     return (
         <div className='sticky top-0 w-full h-[100px] bg-stone-100 overflow-hidden gap-5 grid grid-cols-3 items-center border-b-2 border-b-stone-200'>
             <div className='text-center align-middle w-fit mx-auto'>
-                <p className='text-[49px] -translate-y-[3.5px] opacity-0 md:opacity-100 transition-all duration-300'>comcon</p>
+                <p className='text-[49px] -translate-y-[3.5px] opacity-0 lg:opacity-100 transition-all duration-300'>comcon</p>
             </div>
             <div onMouseLeave={() => { setCursorState({...cursorState, opacity: 0}) }} className='relative justify-self-center w-fit rounded-full flex border-3 text-lg border-black bg-white py-2 px-1 tracking-wide z-10'>
                 <NavbarElement setCursorState={setCursorState} onClick={() => setView("FEED")} name="FEED"/>
                 <NavbarElement setCursorState={setCursorState} onClick={() => setView("EXPLORE")} name="EXPLORE"/>
+                <NavbarElement setCursorState={setCursorState} onClick={() => setView("ACTIVITY")} name="ACTIVITY"/>
                 <CursorBackground state={cursorState}/>
             </div>
             <Github className='mx-auto cursor-pointer opacity-0 md:opacity-100 transition-all duration-300' size={43} strokeWidth={2}/>
