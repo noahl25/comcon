@@ -4,7 +4,7 @@ import Navbar from "./navbar"
 function Feed() {
 
   return (
-    <Navbar/>
+    <div className="">FEED</div>
   )
 }
 

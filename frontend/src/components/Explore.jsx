@@ -3,7 +3,7 @@ import Navbar from './navbar';
 
 function Explore() {
   return (
-    <Navbar/>
+    <div>EXPLORE</div>
   )
 }
 
