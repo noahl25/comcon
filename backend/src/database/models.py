@@ -30,8 +30,9 @@ class Communities(Base):
     __tablename__ = "communities"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(30), nullable=False, unique=True)
-    description = Column(String(750), nullable=False)
+    name = Column(String(20), nullable=False, unique=True)
+    description = Column(String(750))
+    image = Column(String, nullable=True)
 
 Base.metadata.create_all(engine)
 

@@ -4,10 +4,12 @@ export default {
   theme: {
     extend: {
       animation: {
-
+ 
       },
       keyframes: {
-
+        "bounce-right" : {
+          
+        }
       }
     },
   },

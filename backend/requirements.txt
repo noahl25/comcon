@@ -2,3 +2,4 @@ python-dotenv
 fastapi 
 uvicorn
 SQLAlchemy
+python-multipart
