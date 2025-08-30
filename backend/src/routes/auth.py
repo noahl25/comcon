@@ -5,7 +5,7 @@ router = APIRouter()
 
 #create new identifier for user if one doesnt exist, or refresh the existing one.
 @router.post("/user-id")
-def user_id(response: Response, user_id: str = Cookie(None)):
+async def user_id(response: Response, user_id: str = Cookie(None)):
 
     if not user_id:
         user: str = str(uuid.uuid4())

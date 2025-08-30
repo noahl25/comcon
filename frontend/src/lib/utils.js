@@ -34,3 +34,7 @@ export const throttle = (func, limit) => {
   };
 }
 
+export const getCookie = (document, name) => {
+  var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (match) return match[2];
+}
