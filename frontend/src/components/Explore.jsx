@@ -1,6 +1,6 @@
 import { CirclePlus, Search, Check } from 'lucide-react';
 import { motion, useAnimationControls, AnimatePresence } from 'framer-motion';
-import React, { useState, useEffect, use } from 'react'
+import React, { useState, useEffect, use, useRef } from 'react'
 import { getCookie, randomRange } from '../lib/utils';
 import { useApi } from "../lib/api";
 
@@ -61,7 +61,7 @@ const Community = ({item, setCommunities}) => {
 
     const oldCookie = getCookie(document, "communities") || "";
     const newCookie = oldCookie + item;
-    document.cookie = `communities=${newCookie},; max-age=2592000`
+    document.cookie = `communities=${newCookie},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
 
     bgAnimationControls.start({
       height: "100%",
@@ -102,7 +102,7 @@ const Community = ({item, setCommunities}) => {
       }
     }}
     whileHover={{
-      scale: 1.1
+      scale: 1.05
     }}
     transition={{
       ease: "easeInOut"
@@ -115,7 +115,7 @@ const Community = ({item, setCommunities}) => {
     }}
     onClick={onClick}
   >
-    <span className='text-black'>{item.toUpperCase()}</span>
+    <motion.span layout className='text-black'>{item.toUpperCase()}</motion.span> {/* Adding layout to prevent graphical glitches. */}
     <motion.span initial={{ height: "0%" }} animate={bgAnimationControls} layout className='absolute left-0 bottom-0 right-0 bg-black'></motion.span>
     <motion.svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check absolute" aria-hidden="true">
       <motion.path animate={checkAnimationControls} d="M4 12 9 17 20 6" initial={{ pathLength: 0, opacity: 0}}></motion.path> 
@@ -129,26 +129,38 @@ const Communities = ({mediumDevice, currentSearch}) => {
 
   const [communities, setCommunities] = useState([]);
 
+  const sendingRequest = useRef(false);
+
   useEffect(() => {
 
-    makeRequest(`explore/get-communities?q=${currentSearch == "" ? "random" : currentSearch}`, {
-      method: "GET"
-    }).then((data) => {
-      setCommunities(data.names);
-    });
+    //Get random communities if search is empty or look for existing communities.
+    if (!sendingRequest.current) {
+      sendingRequest.current = true;
+      makeRequest(`explore/get-communities?q=${currentSearch == "" ? "random" : currentSearch}`, {
+        method: "GET",
+      }).then((data) => {
+        const communitiesIn = document.cookie.split(",");
+        setCommunities(data.names.filter(item => !communitiesIn.includes(item))); // Dont include communities that user is already a part of.
+      }).finally(() => {
+        sendingRequest.current = false;
+      });
+    }
 
-  }, [currentSearch]);
+  }, [currentSearch, sendingRequest]);
 
   if (communities.length >= 0) {
 
-    return <motion.div style={{ width: mediumDevice ? '50%' : '30%' }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { visualDuration: 1000 } }} className='flex-none mx-auto mt-3 flex flex-wrap gap-2 justify-center items-start'>
+    return <motion.div style={{ width: mediumDevice ? '50%' : '30%' }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { visualDuration: 1000 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
       <AnimatePresence>
         {
           communities.map((item, index) => (
             <Community key={`${item}`} item={item} setCommunities={setCommunities}/>
           ))
         }
-        <motion.p layout initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1.7, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>click any community to join it</motion.p> 
+        { 
+          communities.length === 0 ? <motion.p key="nocommunities" layout initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 0.5, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>no communities found! create one by clicking the plus</motion.p> 
+            : <motion.p layout key="communities" initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1.7, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>click any community to join it</motion.p> 
+        } {/* display message if no communities found */}
       </AnimatePresence>
     </motion.div>
 
@@ -177,6 +189,7 @@ function Explore() {
 
   useEffect(() => {
 
+    // Set medium device if width is greater than 768 pixels.
     const handleResize = () => {
       if (mediumDevice && window.innerWidth > 768)
         setIsMediumDevice(false);
@@ -199,7 +212,7 @@ function Explore() {
           <Search className='ml-3' strokeWidth={3}/>
           <div className='relative grow'>
             <TypewriterTextComponent examples={examples} showExamples={showExamples} exampleIndex={exampleIndex} setExampleIndex={setExampleIndex}/>
-            <form>
+            <form onSubmit={ (e) => e.preventDefault() } >
               <input type="text" id="name" name="name" maxLength="75" autoCorrect="false" autoComplete="off" onChange={(e) => setCurrentSearch(e.target.value) } className='focus:outline-none text-center w-full text-lg' onClick={ () => { setShowExamples(false); } } onBlur={ () => { setShowExamples(currentSearch == ""); setExampleIndex(randomRange(0, examples.length - 1)); } }/>
             </form>
           </div>

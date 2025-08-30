@@ -7,7 +7,7 @@ import { useApi } from "../lib/api";
 
 function Home() {
 
-    const [view, setView] = useState("FEED");
+    const [view, setView] = useState("EXPLORE");
 
     const { makeRequest } = useApi();
 
