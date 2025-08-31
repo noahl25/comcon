@@ -7,9 +7,7 @@ export default {
  
       },
       keyframes: {
-        "bounce-right" : {
-          
-        }
+
       }
     },
   },
