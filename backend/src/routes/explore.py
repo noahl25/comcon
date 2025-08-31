@@ -9,6 +9,8 @@ from ..database import models
 from pydantic import BaseModel
 from typing import Annotated
 
+from ..utils.utils import write_image
+
 import os
 
 router = APIRouter()
@@ -38,24 +40,8 @@ async def create_community(request: Annotated[CreateCommunityRequest, Form()], d
     
     if db.query(models.Communities.name).filter(models.Communities.name == request.name.lower().strip()).scalar():
         return { "status" : f"Error: Community {request.name} already exists." }
-    
-    
-    image_location = null()
-    if request.image and request.image.filename:
 
-        # Autoincrement filename if name exists already then write to folder.
-        i = 0
-        file = request.image.filename.split(".")[0]
-        type = request.image.filename.split(".")[1]
-        while os.path.exists(f"{file}{i}.{type}"):
-            i += 1
-
-        image_location = f"{file}{i}.{type}"
-
-        os.makedirs("images", exist_ok=True)
-        image_location = os.path.join("images", image_location)
-        with open(image_location, "wb") as file:
-            file.write(request.image.file.read())
+    image_location = write_image(request.image)
 
     entry = models.Communities(name=request.name.lower().strip(), description=request.description.strip() if request.description.strip() != "" else null(), image=image_location)
     db.add(entry)
