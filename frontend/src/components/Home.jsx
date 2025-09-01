@@ -3,7 +3,9 @@ import Navbar from "./navbar"
 import Feed from "./Feed";
 import Explore from "./Explore";
 import Activity from "./Activity";
+import Lenis from 'lenis'
 import { useApi } from "../lib/api";
+import { getCookie } from "../lib/utils";
 
 function Home() {
 
@@ -20,6 +22,15 @@ function Home() {
         });
 
     }, []);
+
+    const lenis = new Lenis();
+
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
 
     //Conditionally render content depending on state.
     return <div className="">

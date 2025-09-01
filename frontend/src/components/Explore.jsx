@@ -60,8 +60,11 @@ const Community = ({item, setCommunities}) => {
   const onClick = () => { //Start animations on click and add community to cookies.
 
     const oldCookie = getCookie(document, "communities") || "";
-    const newCookie = oldCookie + item;
-    document.cookie = `communities=${newCookie},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
+    let newCookie = oldCookie;
+    if (oldCookie) {
+      newCookie = oldCookie + (oldCookie[oldCookie.length - 1] === "," ? "" : ",")
+    }
+    document.cookie = `communities=${newCookie + item},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
 
     bgAnimationControls.start({
       height: "100%",
@@ -229,6 +232,14 @@ const CreateCommunityForm = ({setCreateCommunity}) => {
       }).then((data) => {
         if (data.status === "success") {
           setMsg("successfully created community!")
+
+          const oldCookie = getCookie(document, "communities") || "";
+          let newCookie = oldCookie;
+          if (oldCookie) {
+            newCookie = oldCookie + (oldCookie[oldCookie.length - 1] === "," ? "" : ",") //Make sure there is comma at end.
+          }
+          document.cookie = `communities=${newCookie + data.get("name").toLowerCase()},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
+
           animationControls.start({
             opacity: 0,
             transition: {
