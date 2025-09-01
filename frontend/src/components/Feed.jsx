@@ -173,7 +173,6 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
             <AnimatePresence>
               {
                 posts.map((item, index) => {
-                  console.log(item.id)
                   return <Post key={item.id} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
                 })
               }
