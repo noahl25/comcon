@@ -10,6 +10,7 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
 
   return (
     <motion.div
+      layout
       className="w-full border-3 border-black rounded-3xl pt-2 pb-3 px-4 shadow-2xl mt-8" 
       initial={{ 
         opacity: 0 
@@ -34,8 +35,8 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
       <div className="flex justify-between md:justify-start items-center">
         <span className="text-sm text-nowrap md:text-lg mr-0.4">posted in</span>
         <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
-          <div className="w-[40px] h-[40px] rounded-full border-3 border-black overflow-hidden flex justify-center items-center">
-            <img src={communityImage} className="object-cover w-[150%] h-[150%]"></img>
+          <div className="w-[40px] h-[40px] rounded-full border-[3px] border-black overflow-hidden flex justify-center items-center">
+            <img src={`http://localhost:8000/api/feed/images?image_name=${communityImage}`} className="object-cover w-[100%] h-[100%]"></img>
           </div>
         </div>
         <span className="text-lg md:text-2xl font-semibold">{communityName}</span>
@@ -46,8 +47,8 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
           {title}
         </p>
         <div className="relative overflow-hidden rounded-xl">
-          <img src={image} className="object-cover rounded-xl blur-3xl w-[150%] h-[150%] -z-10 absolute inset-0"></img>
-          <img src={image} className="object-contain z-10 mx-auto"></img>
+          <img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-cover rounded-xl blur-3xl w-[150%] h-[150%] -z-10 absolute inset-0"></img>
+          <img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-contain z-10 mx-auto"></img>
         </div>
         <p className={cn("text-lg text-stone-400", image === undefined ? "" : "mt-3")}>
           {text}
@@ -172,6 +173,7 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
             <AnimatePresence>
               {
                 posts.map((item, index) => {
+                  console.log(item.id)
                   return <Post key={item.id} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
                 })
               }
@@ -219,9 +221,6 @@ function Feed() {
       <div className="w-100 md:w-170 mx-auto">
         <motion.p layout className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
         <Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts}/>
-        {
-          posts.length === 0 && <div className="h-[101vh]"/> /* To prevent layout jumps when scrollbar appears. */
-        }
       </div>
     )
   }
