@@ -2,6 +2,7 @@ import { Heart, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 import { cn, getCookie } from "../lib/utils";
 import { useState, useEffect } from "react";
+import { useApi } from "../lib/api";
 
 const Post = ({communityName, communityImage, date, title, image, text, likes}) => {
 
@@ -9,7 +10,6 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
 
   return (
     <motion.div
-      layout 
       className="w-full border-3 border-black rounded-3xl pt-2 pb-3 px-4 shadow-2xl mt-8" 
       initial={{ 
         opacity: 0 
@@ -20,7 +20,7 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
       }}
       exit={{
         opacity: 0,
-        transition: { ease: "easeInOut", duration: 1 }
+        transition: { ease: "easeInOut", duration: 0.75 }
       }}
       viewport={{ once: false, amount: 0.1 }}
       whileHover={{
@@ -32,7 +32,7 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
       }}
     >
       <div className="flex justify-between md:justify-start items-center">
-        <span className="text-sm text-nowrap md:text-md mr-0.4">posted in</span>
+        <span className="text-sm text-nowrap md:text-lg mr-0.4">posted in</span>
         <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
           <div className="w-[40px] h-[40px] rounded-full border-3 border-black overflow-hidden flex justify-center items-center">
             <img src={communityImage} className="object-cover w-[150%] h-[150%]"></img>
@@ -152,7 +152,7 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
       <AnimatePresence>
         {
           communities.map((item, index) => {
-            return <Community key={`${item}-${index}`} item={item} setCommunities={setCommunities} setPosts={setPosts}/>
+            return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts}/>
           })
         }
         <motion.div layout className="w-full flex justify-center" key="msg">
@@ -168,14 +168,16 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
               : "click any community to leave it"}
           </motion.p>
         </motion.div>
-        <motion.div transition={{ ease: "easeInOut", duration: 1 }} className="w-full mx-auto" key="posts">
-            {
-              posts.map((item, index) => {
-                return <Post key={`${index}-${item.communityName}-${item.title}`} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
-              })
-            }
+        <div key="posts" className="w-full mx-auto">
+            <AnimatePresence>
+              {
+                posts.map((item, index) => {
+                  return <Post key={item.id} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
+                })
+              }
+            </AnimatePresence>
           <div className="h-12" key="padding"/>
-        </motion.div>
+        </div>
       </AnimatePresence>
     </motion.div>
 
@@ -183,62 +185,44 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
 
 }
 
-const testPosts = [
-  {
-    communityName: "React Devs",
-    communityImage: "src/assets/test.png",
-    date: "Aug 31, 2025",
-    title: "Animating with Framer Motion",
-    image: "src/assets/test.png",
-    text: "Just discovered how smooth layout animations can be with motion.div!",
-    likes: 12,
-  },
-  {
-    communityName: "UI Design",
-    communityImage: "src/assets/test.png",
-    date: "Aug 30, 2025",
-    title: "Clean Design Practices",
-    image: "src/assets/test.png",
-    text: "Rounded corners and subtle shadows make a huge difference.",
-    likes: 34,
-  },
-  {
-    communityName: "Frontend Tips",
-    communityImage: "src/assets/test.png",
-    date: "Aug 29, 2025",
-    title: "State Management Made Easy",
-    image: "src/assets/test.png",
-    text: "Sometimes useState is all you need. Don’t overcomplicate it!",
-    likes: 21,
-  },
-];
-
 function Feed() {
 
   const [communities, setCommunities] = useState([]);
   const [posts, setPosts] = useState([]);
   const [render, setRender] = useState(false); // Have to have this or else get some weird layout animations.
+  const [excludeList, setExcludeList] = useState([]);
+
+  const { makeRequest } = useApi();
 
   useEffect(() => {
+
+    //Get communities and request posts.
     const cookies = getCookie(document, "communities")
+    let list = [];
     if (cookies) {
-      const list = cookies.split(",");
+      list = cookies.split(",");
       if (list[list.length - 1].length === 0)
         list.pop()
       setCommunities(list);
     }
-    setPosts(testPosts);
-    setRender(true);
+    makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${excludeList.join()}`, {
+      method: "GET"
+    }).then((result) => {
+      setPosts(result);
+      setRender(true);
+    })
+
   }, [])
 
   if (render) {
     return ( 
-      <>
-        <motion.div layout className="w-90 md:w-170 mx-auto">
-          <motion.p layout className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
-          <Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts}/>
-        </motion.div>
-      </>
+      <div className="w-100 md:w-170 mx-auto">
+        <motion.p layout className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
+        <Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts}/>
+        {
+          posts.length === 0 && <div className="h-[101vh]"/> /* To prevent layout jumps when scrollbar appears. */
+        }
+      </div>
     )
   }
 }

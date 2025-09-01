@@ -142,7 +142,12 @@ const Communities = ({mediumDevice, currentSearch}) => {
       makeRequest(`explore/get-communities?q=${currentSearch == "" ? "random" : currentSearch}`, {
         method: "GET",
       }).then((data) => {
-        const communitiesIn = document.cookie.split(",");
+        const cookie = getCookie(document, "communities");
+        let communitiesIn = [];
+        if (cookie) {
+          communitiesIn = cookie.split(",");
+        }
+
         setCommunities(data.names.filter(item => !communitiesIn.includes(item))); // Dont include communities that user is already a part of.
       }).finally(() => {
         sendingRequest.current = false;
@@ -161,8 +166,8 @@ const Communities = ({mediumDevice, currentSearch}) => {
           ))
         }
         { 
-          communities.length === 0 ? <motion.p key="nocommunities" layout initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 0.5, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>no communities found! create one by clicking the plus</motion.p> 
-            : <motion.p layout key="communities" initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1.7, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>click any community to join it</motion.p> 
+          communities.length === 0 ? <motion.p key="nocommunities" layout initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 0.5, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>no communities found! create one by clicking the plus or find your joined communities in your feed</motion.p> 
+            : <motion.p layout key="communities" initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1.7, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>click any community to join it or create one with the plus</motion.p> 
         } {/* display message if no communities found */}
       </AnimatePresence>
     </motion.div>
@@ -220,25 +225,26 @@ const CreateCommunityForm = ({setCreateCommunity}) => {
 
     if (!sentRequest) { //Make sure submit isn't spammed.
 
-      const data = new FormData(formRef.current);
+      const formData = new FormData(formRef.current);
 
       if (selectedFile) {
-        data.append("image", selectedFile);
+        formData.append("image", selectedFile);
       }
 
       makeRequest("explore/create-community", {
         method: "POST",
-        body: data
+        body: formData
       }).then((data) => {
         if (data.status === "success") {
-          setMsg("successfully created community!")
+          setMsg("successfully created and joined community!")
 
           const oldCookie = getCookie(document, "communities") || "";
           let newCookie = oldCookie;
           if (oldCookie) {
             newCookie = oldCookie + (oldCookie[oldCookie.length - 1] === "," ? "" : ",") //Make sure there is comma at end.
           }
-          document.cookie = `communities=${newCookie + data.get("name").toLowerCase()},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
+          console.log(formData.get("name").toLowerCase())
+          document.cookie = `communities=${newCookie + formData.get("name").toLowerCase()},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
 
           animationControls.start({
             opacity: 0,
@@ -248,6 +254,7 @@ const CreateCommunityForm = ({setCreateCommunity}) => {
               delay: 1
             }
           })
+          console.log("here")
           setTimeout(() => {
             setCreateCommunity(false);
           }, 2500);
