@@ -34,17 +34,17 @@ function Home() {
     requestAnimationFrame(raf);
 
     const views = {
-        "FEED": <Feed/>,
-        "EXPLORE": <Explore/>,
-        "ACTIVITY": <Activity/>,
-        "CREATE": <Create/>
+        "FEED": <Feed />,
+        "EXPLORE": <Explore />,
+        "ACTIVITY": <Activity />,
+        "CREATE": <Create />
     }
 
     //Conditionally render content depending on state.
     return <div className="">
-        <Navbar setView={setView}/>
+        <Navbar setView={setView} />
         {
-           views[view] ?? <Explore/>
+            views[view] ?? <Explore />
         }
     </div>
 }
