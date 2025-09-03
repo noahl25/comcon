@@ -227,10 +227,11 @@ const CreateCommunityForm = ({setCreateCommunity}) => {
 
       const formData = new FormData(formRef.current);
 
-      if (selectedFile) {
+      if (!selectedFile) {
+        formData.delete("image");
+      } else {
         formData.append("image", selectedFile);
       }
-
       makeRequest("explore/create-community", {
         method: "POST",
         body: formData
@@ -243,7 +244,6 @@ const CreateCommunityForm = ({setCreateCommunity}) => {
           if (oldCookie) {
             newCookie = oldCookie + (oldCookie[oldCookie.length - 1] === "," ? "" : ",") //Make sure there is comma at end.
           }
-          console.log(formData.get("name").toLowerCase())
           document.cookie = `communities=${newCookie + formData.get("name").toLowerCase()},; max-age=2592000` //Stores saved communities in cookies for up to 30 days.
 
           animationControls.start({
@@ -254,7 +254,6 @@ const CreateCommunityForm = ({setCreateCommunity}) => {
               delay: 1
             }
           })
-          console.log("here")
           setTimeout(() => {
             setCreateCommunity(false);
           }, 2500);

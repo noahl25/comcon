@@ -4,13 +4,15 @@ import { cn, getCookie } from "../lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { useApi } from "../lib/api";
 
-const Post = ({communityName, communityImage, date, title, image, text, likes}) => {
+const Post = ({communityName, communityImage, date, title, image, text, likes, postId}) => {
 
   const [likeClicked, setLikeClicked] = useState(false);
 
   const postRef = useRef(null);
   const inView = useInView(postRef, { once: false, amount: 0.1 });
   const postAnimation = useAnimationControls();
+
+  const { makeRequest } = useApi();
 
   useEffect(() => {
 
@@ -36,7 +38,15 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
 
   }, [inView]);
 
-  console.log(image);
+  const onLikeClicked = () => {
+    
+    makeRequest(`feed/update-likes?liked=${!likeClicked}`, {
+      method: "PATCH"
+    });
+
+    setLikeClicked(prev => (!prev));
+
+  }
 
   return (
     <motion.div
@@ -65,16 +75,18 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
     >
       <div className="flex justify-between md:justify-start items-center">
         <span className="text-sm text-nowrap md:text-lg mr-0.4">posted in</span>
-        <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
-          <div className="w-[40px] h-[40px] rounded-full border-[3px] border-black overflow-hidden flex justify-center items-center">
-            <img src={`http://localhost:8000/api/feed/images?image_name=${communityImage}`} className="object-cover w-[100%] h-[100%]"></img>
+        {
+          communityImage && <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
+            <div className="w-[40px] h-[40px] rounded-full border-[3px] border-black overflow-hidden flex justify-center items-center">
+              <img src={`http://localhost:8000/api/feed/images?image_name=${communityImage}`} className="object-cover w-[100%] h-[100%]"></img>
+            </div>
           </div>
-        </div>
-        <span className="text-lg md:text-2xl font-semibold">{communityName}</span>
+        }
+        <span className={cn("text-lg md:text-2xl font-semibold", communityImage ? "" : "ml-1")}>{communityName}</span>
         <span className="ml-0 md:ml-auto">{date}</span>
       </div>
       <div>
-        <p className="text-3xl font-bold mb-3">
+        <p className={cn("text-3xl font-bold mb-3", communityImage ? "" : "mt-1.5")}>
           {title}
         </p>
         {
@@ -88,7 +100,7 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
         </p>
       </div>
       <div className="flex justify-start items-center gap-3 mt-2.5">
-        <Heart fill={likeClicked ? "#ff2b2bff" : "#ffffff"} size={40} onClick={() => setLikeClicked(prev => (!prev)) }className="cursor-pointer hover:scale-115 transition-all duration-300 ease-in-out active:scale-95"/>
+        <Heart fill={likeClicked ? "#ff2b2bff" : "#ffffff"} size={40} onClick={onLikeClicked}className="cursor-pointer hover:scale-115 transition-all duration-300 ease-in-out active:scale-95"/>
         <MessageCircle fill="#fff"  size={36} className="cursor-pointer hover:scale-115 transition-all duration-300 ease-in-out active:scale-95"/>
       </div>
       <div className="ml-1 mt-1">
@@ -208,7 +220,7 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
             <AnimatePresence>
               {
                 posts.map((item, index) => {
-                  return <Post key={item.id} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
+                  return <Post key={item.id} postId={item.id} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
                 })
               }
               {

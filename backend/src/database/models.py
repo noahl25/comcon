@@ -18,6 +18,15 @@ class Posts(Base):
     date = Column(String, nullable=False)
     image = Column(String, nullable=True) #Path to locally stored image. Ideally images are stored on a cloud service provider but for a small application its fine.
 
+class Likes(Base):
+
+    __tablename__ = "likes"
+
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer, nullable=False)
+    user_id = Column(String, nullable=False)
+
+
 #Store comments with reference to original post.
 class Comments(Base):
     __tablename__ = "comments"
