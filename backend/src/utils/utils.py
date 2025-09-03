@@ -15,13 +15,13 @@ def write_image(image: UploadFile | None):
         while os.path.exists(f"{file}{i}.{type}"):
             i += 1
 
-        image_location = f"{file}{i}.{type}"
+        file_name = f"{file}{i}.{type}"
 
         os.makedirs("images", exist_ok=True)
-        image_location = os.path.join("images", image_location)
+        image_location = os.path.join("images", file_name)
         with open(image_location, "wb") as file:
             file.write(image.file.read())
     
-    return image_location
+    return file_name
     
 

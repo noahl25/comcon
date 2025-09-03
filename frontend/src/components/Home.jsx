@@ -6,6 +6,7 @@ import Activity from "./Activity";
 import Lenis from 'lenis'
 import { useApi } from "../lib/api";
 import { getCookie } from "../lib/utils";
+import Create from "./Create";
 
 function Home() {
 
@@ -32,11 +33,18 @@ function Home() {
 
     requestAnimationFrame(raf);
 
+    const views = {
+        "FEED": <Feed/>,
+        "EXPLORE": <Explore/>,
+        "ACTIVITY": <Activity/>,
+        "CREATE": <Create/>
+    }
+
     //Conditionally render content depending on state.
     return <div className="">
         <Navbar setView={setView}/>
         {
-            view === "FEED" ? <Feed/> : view === "EXPLORE" ? <Explore/> : <Activity/>
+           views[view] ?? <Explore/>
         }
     </div>
 }

@@ -16,6 +16,7 @@
 
 }
 
+/* cubic-bezier function from tailwindcss bounce animation */
 @keyframes bounce-right {
   0%, 100% {
     transform: translateX(-15%);

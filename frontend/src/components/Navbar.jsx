@@ -29,7 +29,7 @@ const NavbarElement = ({name, setCursorState, onClick}) => {
             scale: 0.8,
         }}
     >
-        <p className='text-white mix-blend-difference font-thin cursor-pointer'>
+        <p className='text-white text-sm md:text-lg mix-blend-difference font-thin cursor-pointer'>
             {name}
         </p>
     </motion.div>
@@ -52,6 +52,7 @@ function Navbar({setView}) {
             <div onMouseLeave={() => { setCursorState({...cursorState, opacity: 0}) }} className='relative justify-self-center w-fit rounded-full flex border-3 text-lg border-black bg-white py-2 px-1 tracking-wide z-10'>
                 <NavbarElement setCursorState={setCursorState} onClick={() => setView("FEED")} name="FEED"/>
                 <NavbarElement setCursorState={setCursorState} onClick={() => setView("EXPLORE")} name="EXPLORE"/>
+                <NavbarElement setCursorState={setCursorState} onClick={() => setView("CREATE")} name="CREATE"/>
                 <NavbarElement setCursorState={setCursorState} onClick={() => setView("ACTIVITY")} name="ACTIVITY"/>
                 <CursorBackground state={cursorState}/>
             </div>

@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import explore
-from .routes import feed
-from .routes import auth
+from .routes import explore, feed, auth, create, activity
 
 app = FastAPI()
 
@@ -19,3 +17,5 @@ app.add_middleware(
 app.include_router(feed.router, prefix="/api/feed")
 app.include_router(explore.router, prefix="/api/explore")
 app.include_router(auth.router, prefix="/api/auth")
+app.include_router(activity.router, prefix="/api/activity")
+app.include_router(create.router, prefix="/api/create")

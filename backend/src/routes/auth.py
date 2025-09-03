@@ -3,7 +3,7 @@ import uuid
 
 router = APIRouter()
 
-#create new identifier for user if one doesnt exist, or refresh the existing one.
+#create new identifier for user if one doesnt exist, or refresh the existing one. Http only so can only be accessed server side.
 @router.post("/user-id")
 async def user_id(response: Response, user_id: str = Cookie(None)):
 

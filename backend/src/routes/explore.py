@@ -11,8 +11,6 @@ from typing import Annotated
 
 from ..utils.utils import write_image
 
-import os
-
 router = APIRouter()
 
 @router.get("/get-communities")
@@ -35,15 +33,20 @@ class CreateCommunityRequest(BaseModel):
 @router.post("/create-community")
 async def create_community(request: Annotated[CreateCommunityRequest, Form()], db: Session = Depends(get_db)):
 
+    if request.image and request.image.content_type and not request.image.content_type.startswith("image/"):
+        return { "status" : "Error: Must upload image file." }
+    
     if len(request.name) > 20 or len(request.description) > 750 or len(request.name) == 0:
         return { "status" : "Error: Name must be less than 20 characters and greater than 0 and description must be less than 750." }
     
     if db.query(models.Communities.name).filter(models.Communities.name == request.name.lower().strip()).scalar():
         return { "status" : f"Error: Community {request.name} already exists." }
 
-    image_location = write_image(request.image)
+    image_path = null()
+    if request.image:
+        image_path = write_image(request.image)
 
-    entry = models.Communities(name=request.name.lower().strip(), description=request.description.strip() if request.description.strip() != "" else null(), image=image_location)
+    entry = models.Communities(name=request.name.lower().strip(), description=request.description.strip() if request.description.strip() != "" else null(), image=image_path)
     db.add(entry)
     db.commit()
 

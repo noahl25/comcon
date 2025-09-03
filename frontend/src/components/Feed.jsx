@@ -1,35 +1,66 @@
 import { Heart, MessageCircle } from "lucide-react";
-import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
+import { motion, AnimatePresence, useAnimationControls, useInView } from "framer-motion";
 import { cn, getCookie } from "../lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useApi } from "../lib/api";
 
 const Post = ({communityName, communityImage, date, title, image, text, likes}) => {
 
   const [likeClicked, setLikeClicked] = useState(false);
 
+  const postRef = useRef(null);
+  const inView = useInView(postRef, { once: false, amount: 0.1 });
+  const postAnimation = useAnimationControls();
+
+  useEffect(() => {
+
+    if (inView) {
+      postAnimation.start({
+        opacity: 1,
+        transition: {
+          ease: "easeInOut",
+          duration: 0.8
+        }
+      });
+    }
+    else {
+      postAnimation.start({
+        opacity: 0,
+        transition: {
+          ease: "easeInOut",
+          duration: 0.8
+        }
+      });
+    }
+
+
+  }, [inView]);
+
+  console.log(image);
+
   return (
     <motion.div
+      ref={postRef}
       layout
       className="w-full border-3 border-black rounded-3xl pt-2 pb-3 px-4 shadow-2xl mt-8" 
-      initial={{ 
-        opacity: 0 
-      }} 
-      whileInView={{ 
-        opacity: 1, 
-        transition: { ease: "easeInOut", duration: 1 }
+      initial={{
+        opacity: 0
       }}
+      animate={postAnimation}
       exit={{
         opacity: 0,
         transition: { ease: "easeInOut", duration: 0.75 }
       }}
-      viewport={{ once: false, amount: 0.1 }}
       whileHover={{
         scale: 1.025,
         transition: {
           type: "easeInOut",
-          visualDuration: 0.5
+          duration: 0.5
         }
+      }}
+      transition={{
+        ease: "easeInOut",
+        duration: 0.6
       }}
     >
       <div className="flex justify-between md:justify-start items-center">
@@ -46,11 +77,13 @@ const Post = ({communityName, communityImage, date, title, image, text, likes}) 
         <p className="text-3xl font-bold mb-3">
           {title}
         </p>
-        <div className="relative overflow-hidden rounded-xl">
-          <img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-cover rounded-xl blur-3xl w-[150%] h-[150%] -z-10 absolute inset-0"></img>
-          <img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-contain z-10 mx-auto"></img>
-        </div>
-        <p className={cn("text-lg text-stone-400", image === undefined ? "" : "mt-3")}>
+        {
+          image && <div className="relative overflow-hidden rounded-xl">
+            <img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-cover rounded-xl blur-3xl w-[150%] h-[150%] -z-10 absolute inset-0"></img>
+            <img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-contain max-h-130 w-full h-full z-10 mx-auto"></img>
+          </div>
+        }
+        <p className={cn("text-lg text-stone-400", image ? "mt-3" : "")}>
           {text}
         </p>
       </div>
@@ -88,20 +121,22 @@ const Community = ({item, setCommunities, setPosts}) => {
       },
     }).then(() => {
       setTimeout(() => {
-        const cookies = getCookie(document, "communities"); 
-        // Remove cookie from list
-        if (cookies) {
-          const list = cookies.split(",");
-          if (list[list.length - 1].length === 0) {
-            list.pop()
-          }
-          const newCookies = list.filter(i => i != item);
-          document.cookie = `communities=${newCookies.join()}; max-age=2592000`
-        }
         setCommunities(prev => prev.filter(i => i != item));
         setPosts(prev => prev.filter(i => i.communityName.toLowerCase() != item));
       }, 250)
     })
+    
+    // Remove cookie from list
+    const cookies = getCookie(document, "communities"); 
+    if (cookies) {
+      const list = cookies.split(",");
+      if (list[list.length - 1].length === 0) {
+        list.pop()
+      }
+      const newCookies = list.filter(i => i != item);
+      document.cookie = `communities=${newCookies.join()}; max-age=2592000`
+    }
+
 
   }
 
@@ -173,9 +208,12 @@ const Page = ({communities, setCommunities, posts, setPosts}) => {
             <AnimatePresence>
               {
                 posts.map((item, index) => {
-                  console.log(item.id)
-                  return <Post key={item.id} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
+                  return <Post key={`${item.id}`} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes}/>
                 })
+              }
+              {
+                (communities.length !== 0 && posts.length === 0) && 
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="text-3xl font-bold text-center">no posts yet! create one in the create page.</motion.p>
               }
             </AnimatePresence>
           <div className="h-12" key="padding"/>
@@ -219,7 +257,7 @@ function Feed() {
   if (render) {
     return ( 
       <div className="w-100 md:w-170 mx-auto">
-        <motion.p layout className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
+        <motion.p animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }} initial={{ opacity: 0 }} className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
         <Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts}/>
       </div>
     )
