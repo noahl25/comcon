@@ -54,8 +54,8 @@ const Community = ({ item, setSelectedCommunity }) => {
 const SetCommunity = ({ setSelectedCommunity, communities }) => {
 
     return (
-        <div className='w-fit h-fit flex flex-col gap-3 justify-center items-center'>
-            <p className='text-3xl'>select a community to post in</p>
+        <div className='w-4/5 h-fit flex flex-col gap-3 justify-center items-center'>
+            <p className='text-3xl text-center'>select a community to post in</p>
             <div className='flex flex-row justify-center items-center gap-2'>
                 {
                     communities.map((item) => {
@@ -86,7 +86,7 @@ const SetPostContent = ({ setPostContent, currentPostContent }) => {
     }
 
     return (
-        <form ref={formRef} className='w-full' onSubmit={onSubmit}>
+        <form ref={formRef} className='w-4/5' onSubmit={onSubmit}>
             <p className='text-nowrap text-xl text-center mb-2'>title (required)</p>
             <input required defaultValue={currentPostContent.title} type="text" id="title" name="title" maxLength="75" autoCorrect="off" autoComplete="off" className='focus:outline-none border-3 bg-white shadow-xl rounded-2xl text-left text-nowrap w-full py-2 px-4 text-lg'></input>
             <p className='text-nowrap text-xl text-center mt-3 mb-1'>body (required)</p>
@@ -151,7 +151,7 @@ const PictureUpload = ({ setSelectedImage }) => {
     }
 
     return (
-        <form ref={formRef} className='w-full' onSubmit={onSubmit}>
+        <form ref={formRef} className='w-4/5' onSubmit={onSubmit}>
             <p className='text-nowrap text-xl text-center mt-3 mb-2'>image (optional)</p>
             <input ref={imageRef} type="file" id="image" name="image" accept="image/*" hidden onChange={onImageAdded} disabled={image != null}></input>
             <div className='w-full flex justify-center items-center mt-3'>
@@ -470,7 +470,7 @@ function Create() {
     if (communities.length !== 0) {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="w-[100dvw] overflow-hidden h-[calc(100vh-100px)]">
-                <div className='w-2/3 lg:w-4/11 flex items-center justify-center mx-auto mt-40'>
+                <div className='w-2/3 lg:w-4/11 flex items-center justify-center mx-auto mt-30 md:mt-35'>
                     <ProgressTracker finished={finishedIndex} />
                 </div>
                 <div className='w-2/3 lg:w-4/11 flex flex-col justify-start gap-5 items-center mx-auto mt-7'>
@@ -518,8 +518,8 @@ function Create() {
     }
     else {
         return (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="w-[100dvw] h-[calc(100vh-100px)] flex justify-center items-center">
-                <p className='text-lg'>join a community in the explore page before posting!</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="w-[100dvw] h-[calc(94vh-100px)] flex justify-center items-center">
+                <p className='text-lg text-center'>join a community in the explore page before posting!</p>
             </motion.div>
         )
     }

@@ -21,7 +21,6 @@ async def get_communities(q: str, db: Session = Depends(get_db)):
     else:
         results = db.query(models.Communities.name).filter(models.Communities.name.ilike(f"%{q}%")).limit(5).all() #Get top 5 matches for community name.
 
-    print(results)
     return { "names" : [result[0] for result in results] }
 
 class CreateCommunityRequest(BaseModel):

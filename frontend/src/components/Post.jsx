@@ -9,6 +9,7 @@ import { Heart, MessageCircle } from 'lucide-react'
 export const Post = ({ communityName, communityImage, date, title, image, text, likes, postId, userLiked }) => {
 
 	const [likeClicked, setLikeClicked] = useState(false);
+	const [currentLikes, setCurrentLikes] = useState(likes);
 
 	const postRef = useRef(null);
 	const inView = useInView(postRef, { once: false, amount: 0.1 });
@@ -52,10 +53,18 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 
 		makeRequest(`feed/update-likes?liked=${!likeClicked}&post_id=${postId}`, {
 			method: "PATCH",
-			credentials: "include"
+			credentials: "include",
+			body: JSON.stringify({
+				"liked": !likeClicked,
+				"post_id": postId
+			}),
+			headers: {
+				"Content-Type": "application/json"
+			}
 		});
 
 		setLikeClicked(prev => (!prev)); //Immediately update on frontend.
+		setCurrentLikes(prev => ( prev + ( likeClicked ? -1 : 1) ))
 
 	}
 
@@ -74,6 +83,9 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 			}}
 			whileHover={{
 				scale: 1.02,
+				transition: {
+					duration: 0.6
+				}
 			}}
 			transition={{
 				ease: "easeInOut",
@@ -111,7 +123,7 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 				<MessageCircle fill="#fff" size={36} className="cursor-pointer hover:scale-115 transition-all duration-300 ease-in-out active:scale-95" />
 			</div>
 			<div className="ml-1 mt-1">
-				{likeClicked ? likes + 1 : likes} likes.
+				{ currentLikes } likes.
 			</div>
 		</motion.div>
 	)

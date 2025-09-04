@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Github } from 'lucide-react';
 
@@ -11,14 +11,18 @@ const CursorBackground = ({ state }) => (
 const NavbarElement = ({ name, setCursorState, onClick }) => {
 
     const ref = useRef(null);
+    const [initialWidth, setInitialWidth] = useState(0);
+
+    useEffect(() => {
+        setInitialWidth(ref.current.getBoundingClientRect().width);
+    }, [])
 
     return <motion.div
         className='w-fit px-3'
         ref={ref}
         onMouseEnter={() => {
-            const { width } = ref.current.getBoundingClientRect();
             setCursorState({
-                width: width,
+                width: initialWidth,
                 opacity: 1,
                 left: ref.current.offsetLeft,
                 scale: 1

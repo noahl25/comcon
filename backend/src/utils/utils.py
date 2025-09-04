@@ -24,4 +24,3 @@ def write_image(image: UploadFile | None):
     
     return file_name
     
-
