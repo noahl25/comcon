@@ -100,7 +100,6 @@ async def update_likes(request: UpdateLikesRequest, user_id: str = Cookie(None),
 @router.get("/get-comments")
 async def get_comments(post_id: int, sorted: bool, user_id: str = Cookie(None), db: Session = Depends(get_db)):
 
-    
     if sorted:
 
         #Create custom sorting so comments from user comes first.
@@ -127,6 +126,7 @@ async def get_comments(post_id: int, sorted: bool, user_id: str = Cookie(None), 
     return [
         {
             "text": comment.text,
+            "id": comment.id,
             "isUsers": user
         }
         for comment, user in query
@@ -138,4 +138,19 @@ class CreateCommentRequest(BaseModel):
 
 @router.post("/create-comment")
 async def create_comment(request: CreateCommentRequest, user_id: str = Cookie(None), db: Session = Depends(get_db)):
-    pass
+    
+    if len(request.text) > 250 or len(request.text) == 0:
+        return { "status": "Error: Text has an invalid length." }
+    
+    if not db.query(models.Posts).get(request.post_id):
+        return { "status": "Error: Post does not exist." }
+
+    if not user_id:
+        return { "status": "Error: An error occured. Try refreshing the page." }
+
+    entry = models.Comments(post_id=request.post_id, text=request.text, user_id=user_id)
+    db.add(entry)
+    db.commit()
+
+    db.refresh(entry) 
+    return { "status": "success", "id" : entry.id } 
