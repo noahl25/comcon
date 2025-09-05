@@ -18,11 +18,12 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
     query = (
         db.query(models.Posts, models.Communities)
             .join(models.Communities, models.Posts.community == models.Communities.id)
-            .add_column(func.count(models.Likes.id).label("like_count"))
-            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
+            .outerjoin(models.Likes, models.Likes.post_id == models.Posts.id)
             .filter(models.Posts.user_id == user_id)
             .group_by(models.Posts.id)
             .limit(10)
+            .add_column(func.count(models.Likes.id).label("like_count"))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
             .all()
     )
 

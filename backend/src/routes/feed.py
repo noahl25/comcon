@@ -26,17 +26,16 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
     query = (
         db.query(models.Posts, models.Communities)
             .join(models.Communities, models.Posts.community == models.Communities.id)
-            .add_column(func.count(models.Likes.id).label("like_count"))
-            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
+            .outerjoin(models.Likes, models.Likes.post_id == models.Posts.id)
             .filter(models.Posts.community.in_(community_ids))
             .filter(~models.Posts.id.in_(exclude_list))
             .group_by(models.Posts.id)
             .order_by(func.random())
             .limit(10)
+            .add_column(func.count(models.Likes.id).label("like_count"))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
             .all()
     )
-
-    print(query[0].user_liked)
 
     results = [
         {
@@ -52,6 +51,8 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
         }
         for post, community, like_count, like in query
     ]
+
+    print(results)
 
     return results
 

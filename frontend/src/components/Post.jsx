@@ -118,7 +118,7 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 					{text}
 				</p>
 			</div>
-			<div className="flex justify-start items-center gap-3 mt-3">
+			<div className="flex justify-start items-center gap-3 mt-2">
 				<Heart fill={likeClicked ? "#ff2b2bff" : "#ffffff"} size={40} onClick={onLikeClicked} className="cursor-pointer hover:scale-115 transition-all duration-300 ease-in-out active:scale-95" />
 				<MessageCircle fill="#fff" onClick={() => setShowComments(postId)} size={36} className="cursor-pointer hover:scale-115 transition-all duration-300 ease-in-out active:scale-95" />
 			</div>
