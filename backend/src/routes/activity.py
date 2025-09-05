@@ -63,7 +63,29 @@ async def delete_post(request: DeletePostRequest, user_id: str = Cookie(None), d
     db.delete(query) #First delete the post.
 
     query = db.query(models.Likes).filter(models.Likes.post_id == request.post_id).delete() #Then delete all the likes from that post.
+    query = db.query(models.Comments).filter(models.Comments.post_id == request.post_id).delete() #Then delete the comments.
 
+    db.commit()
+
+    return { "status": "success" }
+
+class DeleteCommentRequest(BaseModel):
+    comment_id: int
+
+@router.delete("/delete-comment")
+async def delete_comment(request: DeleteCommentRequest, user_id: str = Cookie(None), db: Session = Depends(get_db)):
+    
+    comment = db.query(models.Comments).filter(models.Comments.id == request.comment_id).first()
+
+
+    if not comment:
+        return { "status": "Error: comment does not exist." }
+    print(str(comment.user_id))
+
+    if str(comment.user_id) != user_id:
+        return { "status": "Error: cannot delete that comment."}
+    
+    db.delete(comment)
     db.commit()
 
     return { "status": "success" }

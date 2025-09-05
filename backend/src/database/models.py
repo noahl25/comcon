@@ -14,7 +14,6 @@ class Posts(Base):
     community = Column(Integer, nullable=False) #Reference to community in Communities table.
     title = Column(String(75), nullable=False)
     text = Column(String(750), nullable=False)
-    likes = Column(Integer, nullable=False) #Reference to likes in Likes table.
     date = Column(String, nullable=False)
     image = Column(String, nullable=True) #Path to locally stored image. Ideally images are stored on a cloud service provider but for a small application its fine.
 

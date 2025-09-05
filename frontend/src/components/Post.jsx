@@ -92,7 +92,7 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 				duration: 0.6
 			}}
 		>
-			<div className="flex justify-between md:justify-start items-center">
+			<div className="flex justify-center md:justify-start items-center">
 
 				<div className='relative -translate-x-[10px] flex justify-start items-center'>
 					{
@@ -102,12 +102,12 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 							</div>
 						</div>
 					}
-					<span className="text-lg md:text-2xl font-semibold relative -translate-y-[1.2px]">{communityName}</span>
+					<span className={cn("text-lg md:text-2xl font-semibold relative -translate-y-[1.2px]", communityImage ? "" : "ml-2.5")}>{communityName}</span>
 				</div>
 				<span className="ml-0 md:ml-auto">{date}</span>
 			</div>
 			<div>
-				<p className="text-3xl font-bold mb-3 mt-2">
+				<p className="text-3xl font-bold mb-2 mt-2">
 					{title}
 				</p>
 				{

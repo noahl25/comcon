@@ -39,7 +39,7 @@ async def create_post(request: Annotated[CreatePostRequest, Form()], user_id: st
     if request.image:
         image_path = write_image(request.image)
     
-    entry = models.Posts(user_id=user_id, community=community_id[0], title=request.title, text=request.body, likes=0, date=datetime.today().strftime("%m/%d/%Y"), image=image_path)
+    entry = models.Posts(user_id=user_id, community=community_id[0], title=request.title, text=request.body, date=datetime.today().strftime("%m/%d/%Y"), image=image_path)
     db.add(entry)
     db.commit()
 

@@ -31,7 +31,10 @@ const Community = ({ item, setCommunities, setPosts }) => {
 			setTimeout(() => {
 				//If community is removed, remove it from list and remove posts under that community.
 				setCommunities(prev => prev.filter(i => i != item));
-				setPosts(prev => prev.filter(i => i.communityName.toLowerCase() != item));
+				setPosts(prev => prev.filter(i => {
+					return i.communityName.toLowerCase() != item.toLowerCase()
+				}));
+				
 			}, 250)
 		})
 
@@ -101,41 +104,42 @@ const Page = ({ communities, setCommunities, posts, setPosts }) => {
 				<AnimatePresence>
 					{ showComments !== -1 && <Comments postId={showComments} sorted={false} setShowComments={setShowComments}/> }
 				</AnimatePresence>
-				<motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
-					<AnimatePresence>
-						{
-							communities.map((item, index) => {
-								return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
-							})
-						}
-						<motion.div layout className="w-full flex justify-center" key="msg">
-							<motion.p
-								key={communities.length === 0 ? "empty-msg" : "leave-msg"}
-								initial={{ opacity: 0 }}
-								exit={{ opacity: 0, transition: { duration: 0.5 } }}
-								animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }}
-								className='text-lg text-center mt-[3px]'
-							>
-								{communities.length === 0
-									? "you are not part of any communities! join one in the explore page"
-									: "click any community to leave it"}
-							</motion.p>
-						</motion.div>
-						<div key="posts" className="w-full mx-auto">
+				<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
+					{
+						communities.map((item, index) => {
+							return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
+						})
+					}
+					<motion.div layout className="w-full flex justify-center" key="msg">
+						<motion.p
+							layout
+							key={communities.length === 0 ? "empty-msg" : "leave-msg"}
+							initial={{ opacity: 0 }}
+							exit={{ opacity: 0, transition: { duration: 0.5 } }}
+							animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }}
+							className='text-lg text-center mt-[3px]'
+						>
+							{communities.length === 0
+								? "you are not part of any communities! join one in the explore page"
+								: "click any community to leave it"}
+						</motion.p>
+					</motion.div>
+					<motion.div key="posts" className="w-full mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 1, duration: 1, ease: "easeInOut" }}}>
+						<AnimatePresence>
+							{
+								posts.map((item, index) => {
+									return <Post key={item.id} postId={item.id} userLiked={item.userLiked} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes} />
+								})
+							}
 							<AnimatePresence>
-								{
-									posts.map((item, index) => {
-										return <Post key={item.id} postId={item.id} userLiked={item.userLiked} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes} />
-									})
-								}
 								{
 									(communities.length !== 0 && posts.length === 0) &&
 									<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="text-3xl mt-3 font-bold text-center">no posts yet! create one in the create page.</motion.p>
 								}
 							</AnimatePresence>
 							<div className="h-12" key="padding" />
-						</div>
-					</AnimatePresence>
+						</AnimatePresence>
+					</motion.div>
 				</motion.div>
 			</>
 		)
@@ -164,6 +168,7 @@ function Feed() {
 				list.pop()
 			setCommunities(list);
 		}
+
 		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${excludeList.join()}`, {
 			method: "GET",
 			credentials: "include"
@@ -172,7 +177,34 @@ function Feed() {
 			setRender(true);
 		})
 
+		return () => {
+			setRender(false);
+			setPosts([]);
+		}
+
 	}, [])
+	
+	useEffect(() => {
+
+		if (communities.length !== 0) {
+
+			const cookies = getCookie(document, "communities")
+			let list = [];
+			if (cookies) {
+				list = cookies.split(",");
+				if (list[list.length - 1].length === 0)
+					list.pop()
+			}
+			
+			makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${excludeList.join()}`, {
+				method: "GET",
+				credentials: "include"
+			}).then((result) => {
+				setPosts(result);
+			})
+		}
+
+	}, [communities])
 
 	if (render) {
 		return ( 

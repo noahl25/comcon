@@ -12,7 +12,7 @@ function Activity() {
 	const [render, setRender] = useState(false);
 
 	const [showContextMenu, setShowContextMenu] = useState(false);
-	const [contextMenuOptions, setShowContextMenuOptions] = useState([]);
+	const [contextMenuOptions, setContextMenuOptions] = useState([]);
 	const [contextMenuPosition, setContextMenuPosition] = useState({
 		x: 0,
 		y: 0
@@ -31,9 +31,7 @@ function Activity() {
 		});
 
 		const onClick = (e) => {
-			if (!e.target.closest(".context-menu")) {
-				setShowContextMenu(false);
-			}
+			setShowContextMenu(false);
 		}
 
 		window.addEventListener("click", onClick);
@@ -78,7 +76,7 @@ function Activity() {
 			x: e.clientX,
 			y: e.clientY
 		})
-		setShowContextMenuOptions(options);
+		setContextMenuOptions(options);
 
 	}
 

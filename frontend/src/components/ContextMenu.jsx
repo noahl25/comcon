@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 export const ContextMenu = ({ x, y, options}) => {
 
     return <motion.div 
-        className="context-menu absolute w-[200px] border-3 border-black bg-white rounded-2xl bg-black" 
+        className="context-menu absolute w-[200px] border-3 border-black bg-white rounded-2xl bg-black z-1000000" 
         style={{ left: x, top: y + window.scrollY }}
         initial={{
             scale: 0
