@@ -91,44 +91,54 @@ const Community = ({ item, setCommunities, setPosts }) => {
 
 const Page = ({ communities, setCommunities, posts, setPosts }) => {
 
+	//-1 to not show comments or positive post id to show comments.
+	const [showComments, setShowComments] = useState(-1);
+
 	if (communities.length >= 0) {
 
-		return <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
-			<AnimatePresence>
-				{
-					communities.map((item, index) => {
-						return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
-					})
-				}
-				<motion.div layout className="w-full flex justify-center" key="msg">
-					<motion.p
-						key={communities.length === 0 ? "empty-msg" : "leave-msg"}
-						initial={{ opacity: 0 }}
-						exit={{ opacity: 0, transition: { duration: 0.5 } }}
-						animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }}
-						className='text-lg text-center mt-[3px]'
-					>
-						{communities.length === 0
-							? "you are not part of any communities! join one in the explore page"
-							: "click any community to leave it"}
-					</motion.p>
-				</motion.div>
-				<div key="posts" className="w-full mx-auto">
+		return ( 
+			<>
+				<AnimatePresence>
+					{ showComments !== -1 && <Comments postId={showComments} sorted={false} setShowComments={setShowComments}/> }
+				</AnimatePresence>
+				<motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
 					<AnimatePresence>
 						{
-							posts.map((item, index) => {
-								return <Post key={item.id} postId={item.id} userLiked={item.userLiked} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes} />
+							communities.map((item, index) => {
+								return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
 							})
 						}
-						{
-							(communities.length !== 0 && posts.length === 0) &&
-							<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="text-3xl font-bold text-center">no posts yet! create one in the create page.</motion.p>
-						}
+						<motion.div layout className="w-full flex justify-center" key="msg">
+							<motion.p
+								key={communities.length === 0 ? "empty-msg" : "leave-msg"}
+								initial={{ opacity: 0 }}
+								exit={{ opacity: 0, transition: { duration: 0.5 } }}
+								animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }}
+								className='text-lg text-center mt-[3px]'
+							>
+								{communities.length === 0
+									? "you are not part of any communities! join one in the explore page"
+									: "click any community to leave it"}
+							</motion.p>
+						</motion.div>
+						<div key="posts" className="w-full mx-auto">
+							<AnimatePresence>
+								{
+									posts.map((item, index) => {
+										return <Post key={item.id} postId={item.id} userLiked={item.userLiked} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes} />
+									})
+								}
+								{
+									(communities.length !== 0 && posts.length === 0) &&
+									<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="text-3xl mt-3 font-bold text-center">no posts yet! create one in the create page.</motion.p>
+								}
+							</AnimatePresence>
+							<div className="h-12" key="padding" />
+						</div>
 					</AnimatePresence>
-					<div className="h-12" key="padding" />
-				</div>
-			</AnimatePresence>
-		</motion.div>
+				</motion.div>
+			</>
+		)
 
 	}
 
@@ -165,7 +175,7 @@ function Feed() {
 	}, [])
 
 	if (render) {
-		return (
+		return ( 
 			<div className="w-100 md:w-170 mx-auto">
 				<motion.p animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }} initial={{ opacity: 0 }} className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
 				<Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts} />

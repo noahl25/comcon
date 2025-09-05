@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Depends, Cookie
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, null
+from sqlalchemy import func, and_, case
 import os
 from pydantic import BaseModel
 
 from ..database.models import get_db
 from ..database import models
-from ..utils.utils import get_likes
-
 router = APIRouter()
 
 # Get 10 random posts from given communities. Exclude posts already seen in session.
@@ -26,9 +24,10 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
 
     community_ids = [result[0] for result in db.query(models.Communities.id).filter(models.Communities.name.in_(all_communities)).all()] #List of all community id's.
     query = (
-        db.query(models.Posts, models.Communities, models.Likes, func.count(models.Likes.id).label("like_count"))
+        db.query(models.Posts, models.Communities)
             .join(models.Communities, models.Posts.community == models.Communities.id)
-            .outerjoin(models.Likes, and_(models.Likes.post_id == models.Posts.id, models.Likes.user_id == user_id))
+            .add_column(func.count(models.Likes.id).label("like_count"))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
             .filter(models.Posts.community.in_(community_ids))
             .filter(~models.Posts.id.in_(exclude_list))
             .group_by(models.Posts.id)
@@ -37,6 +36,7 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
             .all()
     )
 
+    print(query[0].user_liked)
 
     results = [
         {
@@ -48,9 +48,9 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
             "text": post.text,
             "likes": like_count,
             "id": post.id,
-            "userLiked": like is not None
+            "userLiked": bool(like)
         }
-        for post, community, like, like_count in query
+        for post, community, like_count, like in query
     ]
 
     return results
@@ -95,3 +95,46 @@ async def update_likes(request: UpdateLikesRequest, user_id: str = Cookie(None),
 
     return { "status": "success" }
 
+#Get comments from post id.
+@router.get("/get-comments")
+async def get_comments(post_id: int, sorted: bool, user_id: str = Cookie(None), db: Session = Depends(get_db)):
+
+    
+    if sorted:
+
+        #Create custom sorting so comments from user comes first.
+        sort = case(
+            ((models.Comments.user_id == user_id), 0),
+            else_=1
+        )
+
+        query = (
+            db.query(models.Comments)
+                .filter(models.Comments.post_id == post_id)
+                .add_column((models.Comments.user_id == user_id).label("user"))
+                .order_by(sort)
+                .all()
+        )
+    else:
+        query = (
+            db.query(models.Comments)
+                .filter(models.Comments.post_id == post_id)
+                .add_column((models.Comments.user_id == user_id).label("user"))
+                .all()
+        )
+
+    return [
+        {
+            "text": comment.text,
+            "isUsers": user
+        }
+        for comment, user in query
+    ]
+
+class CreateCommentRequest(BaseModel):
+    text: str
+    post_id: int
+
+@router.post("/create-comment")
+async def create_comment(request: CreateCommentRequest, user_id: str = Cookie(None), db: Session = Depends(get_db)):
+    pass

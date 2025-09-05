@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, Cookie
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, case
 from sqlalchemy.dialects import sqlite
 
 from ..database.models import get_db
 from ..database import models
-from ..utils.utils import get_likes
 
 router = APIRouter()
 
@@ -17,14 +16,17 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
         return []
     
     query = (
-        db.query(models.Posts, models.Communities, models.Likes, func.count(models.Likes.id).label("like_count"))
+        db.query(models.Posts, models.Communities)
             .join(models.Communities, models.Posts.community == models.Communities.id)
-            .outerjoin(models.Likes, and_(models.Likes.post_id == models.Posts.id, models.Likes.user_id == user_id))
+            .add_column(func.count(models.Likes.id).label("like_count"))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
             .filter(models.Posts.user_id == user_id)
             .group_by(models.Posts.id)
             .limit(10)
             .all()
     )
+
+
 
     results = [
         {
@@ -36,9 +38,9 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
             "text": post.text,
             "likes": like_count,
             "id": post.id,
-            "userLiked": like is not None
+            "userLiked": bool(like)
         }
-        for post, community, like, like_count in query
+        for post, community, like_count, like in query
     ]
 
     return results

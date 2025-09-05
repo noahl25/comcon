@@ -33,7 +33,7 @@ class Comments(Base):
 
     id = Column(Integer, primary_key=True)
     post_id = Column(Integer, nullable=False)
-    user_id = Column(Integer, nullable=False)
+    user_id = Column(String, nullable=False)
     text = Column(String, nullable=False)
 
 #All existing communities and their descriptions.

@@ -17,6 +17,20 @@
 		animation: bounce-right 1s infinite;
 	}
 
+	.scroll-div::-webkit-scrollbar {
+		width: 7px;
+	}
+
+	.scroll-div::-webkit-scrollbar-track {
+		background: white;
+	}
+
+	.scroll-div::-webkit-scrollbar-thumb {
+		background: black;
+		border-radius: 100vw;
+	}
+
+
 }
 
 /* cubic-bezier function from tailwindcss bounce animation */

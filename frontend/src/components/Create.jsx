@@ -91,7 +91,7 @@ const SetPostContent = ({ setPostContent, currentPostContent }) => {
             <input required defaultValue={currentPostContent.title} type="text" id="title" name="title" maxLength="75" autoCorrect="off" autoComplete="off" className='focus:outline-none border-3 bg-white shadow-xl rounded-2xl text-left text-nowrap w-full py-2 px-4 text-lg'></input>
             <p className='text-nowrap text-xl text-center mt-3 mb-1'>body (required)</p>
             <div className='border-3 rounded-2xl w-full h-[300px] p-2  shadow-xl'>
-                <textarea defaultValue={currentPostContent.body} type="text" id="body" name="body" maxLength="750" autoCorrect="off" autoComplete="off" className='focus:outline-none bg-white text-wrap text-left w-full h-full resize-none px-2 py-1 text-lg'></textarea>
+                <textarea defaultValue={currentPostContent.body} required type="text" id="body" name="body" maxLength="750" autoCorrect="off" autoComplete="off" className='focus:outline-none bg-white text-wrap text-left w-full h-full resize-none px-2 py-1 text-lg'></textarea>
             </div>
             <div className='w-full h-[2px] mt-6 bg-stone-300/80' />
             <button type="submit" className='w-full flex mt-5 justify-center items-center'>
