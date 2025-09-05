@@ -93,19 +93,21 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 			}}
 		>
 			<div className="flex justify-between md:justify-start items-center">
-				<span className="text-sm text-nowrap md:text-lg mr-0.4">posted in</span>
-				{
-					communityImage && <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
-						<div className="w-[40px] h-[40px] rounded-full border-[3px] border-black overflow-hidden flex justify-center items-center">
-							<img src={`http://localhost:8000/api/feed/images?image_name=${communityImage}`} className="object-cover w-[100%] h-[100%]"></img>
+
+				<div className='relative -translate-x-[10px] flex justify-start items-center'>
+					{
+						communityImage && <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
+							<div className="w-[40px] h-[40px] rounded-full border-[3px] border-black overflow-hidden flex justify-center items-center">
+								<img src={`http://localhost:8000/api/feed/images?image_name=${communityImage}`} className="object-cover w-[100%] h-[100%]"></img>
+							</div>
 						</div>
-					</div>
-				}
-				<span className={cn("text-lg md:text-2xl font-semibold relative -translate-y-[1.2px]", communityImage ? "" : "ml-1")}>{communityName}</span>
+					}
+					<span className="text-lg md:text-2xl font-semibold relative -translate-y-[1.2px]">{communityName}</span>
+				</div>
 				<span className="ml-0 md:ml-auto">{date}</span>
 			</div>
 			<div>
-				<p className={cn("text-3xl font-bold mb-3", communityImage ? "" : "mt-2")}>
+				<p className="text-3xl font-bold mb-3 mt-2">
 					{title}
 				</p>
 				{

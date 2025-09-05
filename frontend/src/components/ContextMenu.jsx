@@ -4,7 +4,7 @@ export const ContextMenu = ({ x, y, options}) => {
 
     return <motion.div 
         className="context-menu absolute w-[200px] border-3 border-black bg-white rounded-2xl bg-black" 
-        style={{ left: x, top: y }}
+        style={{ left: x, top: y + window.scrollY }}
         initial={{
             scale: 0
         }}

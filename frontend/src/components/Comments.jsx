@@ -40,29 +40,15 @@ export const Comments = ({ postId, setShowComments, sorted }) => {
 
     useEffect(() => {
 
-        //Allow user to scroll inside comments if overflow.
-        const onMouseWheel = (e) => {
-            commentsDiv.current.scrollBy({
-                top: e.deltaY,
-                behavior: "smooth"
-            });
-        }
-
-        window.addEventListener("wheel", onMouseWheel);
-
         //Get comments from post.
         makeRequest(`feed/get-comments?post_id=${postId}&sorted=${sorted}`, {
             method: "GET",
             credentials: "include"
         }).then((comments) => {
             setComments(comments);
-        })
+        });
 
-
-8
-        return () => window.removeEventListener("wheel", onMouseWheel);
-
-    }, [])
+    }, []);
 
     const onSubmit = (e) => {
 
@@ -82,6 +68,7 @@ export const Comments = ({ postId, setShowComments, sorted }) => {
 			}
         }).then((response) => {
 
+            //Update on frontend if request goes through.
             if (!response["status"].includes("Error")) {
                 setComments(prev => ([
                     {
