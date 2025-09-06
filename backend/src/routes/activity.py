@@ -80,7 +80,6 @@ async def delete_comment(request: DeleteCommentRequest, user_id: str = Cookie(No
 
     if not comment:
         return { "status": "Error: comment does not exist." }
-    print(str(comment.user_id))
 
     if str(comment.user_id) != user_id:
         return { "status": "Error: cannot delete that comment."}

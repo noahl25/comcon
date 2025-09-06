@@ -22,6 +22,7 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
     if exclude:
         exclude_list = [int(i) for i in exclude.split(",")]
 
+
     community_ids = [result[0] for result in db.query(models.Communities.id).filter(models.Communities.name.in_(all_communities)).all()] #List of all community id's.
     query = (
         db.query(models.Posts, models.Communities)
@@ -51,8 +52,6 @@ async def get_posts(communities: str | None, exclude: str | None, user_id: str =
         }
         for post, community, like_count, like in query
     ]
-
-    print(results)
 
     return results
 

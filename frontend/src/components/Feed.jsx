@@ -4,6 +4,7 @@ import { cn, getCookie } from "../lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { useApi } from "../lib/api";
 import { Post } from "./Post";
+import { Comments } from "./Comments";
 
 //Induvidual community button.
 const Community = ({ item, setCommunities, setPosts }) => {
@@ -92,7 +93,7 @@ const Community = ({ item, setCommunities, setPosts }) => {
 
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
 
-const Page = ({ communities, setCommunities, posts, setPosts }) => {
+const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loadMoreMsg }) => {
 
 	//-1 to not show comments or positive post id to show comments.
 	const [showComments, setShowComments] = useState(-1);
@@ -105,41 +106,90 @@ const Page = ({ communities, setCommunities, posts, setPosts }) => {
 					{ showComments !== -1 && <Comments postId={showComments} sorted={false} setShowComments={setShowComments}/> }
 				</AnimatePresence>
 				<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
-					{
-						communities.map((item, index) => {
-							return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
-						})
-					}
-					<motion.div layout className="w-full flex justify-center" key="msg">
-						<motion.p
-							layout
-							key={communities.length === 0 ? "empty-msg" : "leave-msg"}
-							initial={{ opacity: 0 }}
-							exit={{ opacity: 0, transition: { duration: 0.5 } }}
-							animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }}
-							className='text-lg text-center mt-[3px]'
-						>
-							{communities.length === 0
-								? "you are not part of any communities! join one in the explore page"
-								: "click any community to leave it"}
-						</motion.p>
-					</motion.div>
-					<motion.div key="posts" className="w-full mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 1, duration: 1, ease: "easeInOut" }}}>
-						<AnimatePresence>
-							{
-								posts.map((item, index) => {
-									return <Post key={item.id} postId={item.id} userLiked={item.userLiked} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes} />
-								})
-							}
-							<AnimatePresence>
+					<AnimatePresence>
+						{
+							communities.map((item, index) => {
+								return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
+							})
+						}
+						{	
+							communities.length !== 0 ?
+							<motion.div transition={{ ease: "easeInOut", duration: 0.75 }} animate={{ opacity: 1 }} initial={{ opacity: 0 }} className="w-full flex justify-center">
+								<motion.p className="text-xl text-center">click any community to leave it.</motion.p>
+							</motion.div>
+							:
+							<motion.div layout transition={{ ease: "easeInOut", duration: 0.75 }} animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opactiy: 0 }}  className="w-full flex justify-center">
+								<motion.p layout className="text-xl text-center">join a community in the explore page to see posts!</motion.p>
+							</motion.div>
+						}
+						<motion.div key="posts" className="w-full mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 1, duration: 1, ease: "easeInOut" }}}>
+							<AnimatePresence initial={false}>
 								{
-									(communities.length !== 0 && posts.length === 0) &&
-									<motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ ease: "easeInOut", duration: 1 }} className="text-3xl mt-3 font-bold text-center">no posts yet! create one in the create page.</motion.p>
+									posts.map((item) => {
+										return <Post setShowComments={setShowComments} key={item.id} postId={item.id} userLiked={item.userLiked} communityName={item.communityName} communityImage={item.communityImage} date={item.date} title={item.title} image={item.image} text={item.text} likes={item.likes} />
+									})
 								}
 							</AnimatePresence>
 							<div className="h-12" key="padding" />
-						</AnimatePresence>
-					</motion.div>
+							<AnimatePresence>
+								{ (communities.length !== 0 && posts.length !== 0) && 
+									<motion.div 
+										className="text-center pb-13 cursor-pointer text-stone-400" 
+										layout
+										onClick={loadMorePosts}
+										initial={{
+											opacity: 0
+										}}
+										animate={{
+											opacity: 1
+										}}
+										exit={{
+											opacity: 0,
+											transition: { ease: "easeInOut", duration: 0.75 }
+										}}
+										whileHover={{
+											scale: 1.02,
+											transition: {
+												duration: 0.6
+											}
+										}}
+										transition={{
+											ease: "easeInOut",
+											duration: 0.6
+										}}
+									>
+										{loadMoreMsg}
+									</motion.div> 
+								}
+								{
+									posts.length === 0 && communities.length !== 0 &&
+									<motion.p key="msg" 
+										initial={{ opacity: 0 }} 
+										layout 
+										animate={{ 
+											opacity: 1,
+											transition: {
+												ease: "easeInOut",
+												delay: 1,
+												duration: 0.75
+											}
+										}}
+										exit={{
+											opacity: 0,
+											transition: {
+												ease: "easeInOut",
+												duration: 0.75
+											}
+										}}
+										transition={{ ease: "easeInOut", duration: 0.75 }} 
+										className="text-3xl font-bold text-center relative -translate-y-[40px]"
+									>
+										no posts yet! create one in the create page.
+									</motion.p>
+								}
+							</AnimatePresence>
+						</motion.div>
+					</AnimatePresence>
 				</motion.div>
 			</>
 		)
@@ -152,53 +202,55 @@ function Feed() {
 
 	const [communities, setCommunities] = useState([]);
 	const [posts, setPosts] = useState([]);
-	const [render, setRender] = useState(false); // Have to have this or else get some weird layout animations.
-	const [excludeList, setExcludeList] = useState([]); //So user doesn't see the same posts when loading more.
+	const [render, setRender] = useState(true); // Have to have this or else get some weird layout animations.
 
 	const { makeRequest } = useApi();
 
-	useEffect(() => {
-
-		//Get communities and request posts.
+	const getCommunities = () => {
 		const cookies = getCookie(document, "communities")
 		let list = [];
 		if (cookies) {
 			list = cookies.split(",");
 			if (list[list.length - 1].length === 0)
 				list.pop()
-			setCommunities(list);
 		}
+		return list
 
-		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${excludeList.join()}`, {
+	}
+
+	useEffect(() => {
+
+		//Get communities and request posts.
+		const list = getCommunities();
+		setCommunities(list);
+
+		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=`, {
 			method: "GET",
-			credentials: "include"
+			credentials: "include",
+			headers: {
+				"Cache-Control": "private, no-store, max-age=0"
+			}
 		}).then((result) => {
 			setPosts(result);
 			setRender(true);
 		})
 
-		return () => {
-			setRender(false);
-			setPosts([]);
-		}
-
 	}, [])
 	
 	useEffect(() => {
 
-		if (communities.length !== 0) {
+		const list = getCommunities();
 
-			const cookies = getCookie(document, "communities")
-			let list = [];
-			if (cookies) {
-				list = cookies.split(",");
-				if (list[list.length - 1].length === 0)
-					list.pop()
-			}
-			
-			makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${excludeList.join()}`, {
+		if (list.length !== 0 && posts.length === 0) {
+
+			const exclude = posts.map(post => post.id);
+
+			makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${exclude.join()}`, {
 				method: "GET",
-				credentials: "include"
+				credentials: "include",
+				headers: {
+					"Cache-Control": "private, no-store, max-age=0"
+				}
 			}).then((result) => {
 				setPosts(result);
 			})
@@ -206,11 +258,39 @@ function Feed() {
 
 	}, [communities])
 
+	const [loadMoreMsg, setLoadMoreMsg] = useState("load more");
+
+	const loadMorePosts = () => {
+		
+		if (posts.length === 0) return;
+
+		const list = getCommunities();
+		const exclude = posts.map(post => post.id);
+			
+
+		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${exclude.join()}`, {
+			method: "GET",
+			credentials: "include",
+			headers: {
+				"Cache-Control": "private, no-store, max-age=0"
+			}
+		}).then((result) => {
+
+			if (result.length === 0) {
+				setLoadMoreMsg("no more posts found!")
+			}
+			setPosts(prev => {
+				return [...prev, ...result]
+			});
+		});
+
+	}
+
 	if (render) {
 		return ( 
 			<div className="w-100 md:w-170 mx-auto">
-				<motion.p animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }} initial={{ opacity: 0 }} className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
-				<Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts} />
+				<motion.p animate={{ opacity: 1, transition: { opacity: { duration: 0.75, ease: "easeInOut" } } }} initial={{ opacity: 0 }} className="text-4xl text-center mt-7">your communities</motion.p> {/* Adding layout prop to prevent scaling issues. */}
+				<Page communities={communities} setCommunities={setCommunities} posts={posts} setPosts={setPosts} loadMorePosts={loadMorePosts} loadMoreMsg={loadMoreMsg}/>
 			</div>
 		)
 	}

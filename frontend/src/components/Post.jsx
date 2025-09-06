@@ -47,6 +47,14 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 			setLikeClicked(true);
 		}
 
+		postAnimation.start({
+			opacity: 1,
+			transition: {
+				ease: "easeInOut",
+				duration: 0.8
+			}
+		});
+
 	}, [])
 
 	const onLikeClicked = () => {
@@ -96,7 +104,7 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 
 				<div className='relative -translate-x-[10px] flex justify-start items-center'>
 					{
-						communityImage && <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center items-center">
+						communityImage && <div className="w-[50px] h-[50px] absolute opacity-0 md:static md:opacity-100 flex justify-center ml-0.5 items-center">
 							<div className="w-[40px] h-[40px] rounded-full border-[3px] border-black overflow-hidden flex justify-center items-center">
 								<img src={`http://localhost:8000/api/feed/images?image_name=${communityImage}`} className="object-cover w-[100%] h-[100%]"></img>
 							</div>

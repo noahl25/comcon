@@ -41,12 +41,12 @@ function Home() {
     }
 
     //Conditionally render content depending on state.
-    return <div className="">
+    return <>
         <Navbar setView={setView} />
         {
             views[view] ?? <Explore />
         }
-    </div>
+    </>
 }
 
 export default Home;
