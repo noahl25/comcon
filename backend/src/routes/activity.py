@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Cookie
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func, case
+from sqlalchemy import or_, func, case
 from sqlalchemy.dialects import sqlite
 
 from ..database.models import get_db
@@ -21,13 +21,10 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
             .outerjoin(models.Likes, models.Likes.post_id == models.Posts.id)
             .filter(models.Posts.user_id == user_id)
             .group_by(models.Posts.id)
-            .limit(10)
-            .add_column(func.count(models.Likes.id).label("like_count"))
-            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
+            .add_column(func.count(models.Likes.id))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)))
             .all()
     )
-
-
 
     results = [
         {
@@ -43,6 +40,43 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
         }
         for post, community, like_count, like in query
     ]
+
+    return results
+
+@router.get("/get-user-likes-comments")
+async def get_user_likes_comments(user_id: str = Cookie(None), db: Session = Depends(get_db)):
+
+    if not user_id:
+        return []
+    
+    query = (
+        db.query(models.Posts, models.Communities)
+            .join(models.Communities, models.Posts.community == models.Communities.id)
+            .outerjoin(models.Likes, models.Likes.post_id == models.Posts.id)
+            .outerjoin(models.Comments, models.Comments.post_id == models.Posts.id)
+            .filter(or_(models.Likes.user_id == user_id, models.Comments.user_id == user_id))
+            .group_by(models.Posts.id)
+            .add_column(func.count(models.Likes.id))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)))
+            .all() 
+    )
+
+    results = [
+        {
+            "communityName": community.name,
+            "communityImage": community.image,
+            "date": post.date,
+            "title": post.title,
+            "image": post.image,
+            "text": post.text,
+            "likes": like_count,
+            "id": post.id,
+            "userLiked": bool(like)
+        }
+        for post, community, like_count, like in query
+    ]
+
+    print(results)
 
     return results
 

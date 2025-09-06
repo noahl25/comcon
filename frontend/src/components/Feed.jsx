@@ -91,8 +91,6 @@ const Community = ({ item, setCommunities, setPosts }) => {
 	</motion.div>
 }
 
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-
 const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loadMoreMsg }) => {
 
 	//-1 to not show comments or positive post id to show comments.
@@ -107,21 +105,40 @@ const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loa
 				</AnimatePresence>
 				<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
 					<AnimatePresence>
-						{
-							communities.map((item, index) => {
-								return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
-							})
-						}
-						{	
-							communities.length !== 0 ?
-							<motion.div transition={{ ease: "easeInOut", duration: 0.75 }} animate={{ opacity: 1 }} initial={{ opacity: 0 }} className="w-full flex justify-center">
-								<motion.p className="text-xl text-center">click any community to leave it.</motion.p>
-							</motion.div>
-							:
-							<motion.div layout transition={{ ease: "easeInOut", duration: 0.75 }} animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opactiy: 0 }}  className="w-full flex justify-center">
-								<motion.p layout className="text-xl text-center">join a community in the explore page to see posts!</motion.p>
-							</motion.div>
-						}
+							{
+								communities.map((item, index) => {
+									return <Community key={item} item={item} setCommunities={setCommunities} setPosts={setPosts} />
+								})
+							}
+							<AnimatePresence mode="wait">
+								{
+									communities.length !== 0
+									?
+										<motion.div
+										key="has-communities"
+										layout
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ ease: "easeInOut", duration: 0.75 }}
+										className="w-full flex justify-center"
+									>
+										<motion.p layout className="text-xl text-center">click any community to leave it.</motion.p>
+									</motion.div>
+									: 
+									<motion.div
+										key="no-communities"
+										layout
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ ease: "easeInOut", duration: 0.75 }}
+										className="w-full flex justify-center"
+									>
+										<motion.p layout className="text-xl text-center">join a community in the explore page to see posts!</motion.p>
+									</motion.div>
+								}
+							</AnimatePresence>
 						<motion.div key="posts" className="w-full mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 1, duration: 1, ease: "easeInOut" }}}>
 							<AnimatePresence initial={false}>
 								{
@@ -202,7 +219,7 @@ function Feed() {
 
 	const [communities, setCommunities] = useState([]);
 	const [posts, setPosts] = useState([]);
-	const [render, setRender] = useState(true); // Have to have this or else get some weird layout animations.
+	const [render, setRender] = useState(false); // Have to have this or else get some weird layout animations.
 
 	const { makeRequest } = useApi();
 
@@ -227,9 +244,6 @@ function Feed() {
 		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=`, {
 			method: "GET",
 			credentials: "include",
-			headers: {
-				"Cache-Control": "private, no-store, max-age=0"
-			}
 		}).then((result) => {
 			setPosts(result);
 			setRender(true);
@@ -241,17 +255,15 @@ function Feed() {
 
 		const list = getCommunities();
 
-		if (list.length !== 0 && posts.length === 0) {
+		if (list.length !== 0 && posts.length === 0 && render) {
 
 			const exclude = posts.map(post => post.id);
 
 			makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${exclude.join()}`, {
 				method: "GET",
 				credentials: "include",
-				headers: {
-					"Cache-Control": "private, no-store, max-age=0"
-				}
 			}).then((result) => {
+				console.log("here");
 				setPosts(result);
 			})
 		}
@@ -271,9 +283,6 @@ function Feed() {
 		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${exclude.join()}`, {
 			method: "GET",
 			credentials: "include",
-			headers: {
-				"Cache-Control": "private, no-store, max-age=0"
-			}
 		}).then((result) => {
 
 			if (result.length === 0) {
