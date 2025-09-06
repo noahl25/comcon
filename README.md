@@ -18,7 +18,7 @@ The backend is Python with FastAPI and SQLAlchemy.
 
 First, make sure you have NodeJS and Python 3.0+ installed.  
 
-I included two batch files, [setup.bat](https://github.com/noahl25/comcon/blob/main/setup.bat) and [run.bat](https://github.com/noahl25/comcon/blob/main/run.bat), which should install the correct packages and run both the frontend and backend.  
+I included two batch files, [backend.bat](https://github.com/noahl25/comcon/blob/main/backend.bat) and [frontend.bat](https://github.com/noahl25/comcon/blob/main/frontend.bat), which should install the correct packages and run both the frontend and backend.  
 
 If you want to setup and run the program yourself, you can do the following steps.  
 
