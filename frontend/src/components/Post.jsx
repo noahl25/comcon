@@ -124,7 +124,7 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 						<img src={`http://localhost:8000/api/feed/images?image_name=${image}`} className="object-contain max-h-130 w-full h-full z-10 mx-auto"></img>
 					</div>
 				}
-				<p className={cn("text-lg text-stone-400", image ? "mt-3" : "")}>
+				<p className={cn("text-lg text-stone-400", image ? "mt-1.5" : "")}>
 					{text}
 				</p>
 			</div>

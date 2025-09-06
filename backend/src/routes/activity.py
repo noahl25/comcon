@@ -119,3 +119,26 @@ async def delete_comment(request: DeleteCommentRequest, user_id: str = Cookie(No
     db.commit()
 
     return { "status": "success" }
+
+class EditCommentRequest(BaseModel):
+    comment_id: int
+    text: str
+
+@router.patch("/edit-comment")
+async def edit_comment(request: EditCommentRequest, user_id: str = Cookie(None), db: Session = Depends(get_db)):
+
+    comment = db.query(models.Comments).filter(models.Comments.id == request.comment_id).first()
+
+    if not comment:
+        return { "status": "Error: comment does not exist." }
+
+    if str(comment.user_id) != user_id:
+        return { "status": "Error: cannot delete that comment."}
+    
+    if len(request.text) > 200 or len(request.text) == 0:
+        return { "status": "Error: Text has an invalid length." } 
+    
+    comment.text = request.text #type: ignore
+    db.commit()
+
+    return { "status": "success" }

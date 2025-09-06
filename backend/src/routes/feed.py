@@ -138,7 +138,7 @@ class CreateCommentRequest(BaseModel):
 @router.post("/create-comment")
 async def create_comment(request: CreateCommentRequest, user_id: str = Cookie(None), db: Session = Depends(get_db)):
     
-    if len(request.text) > 250 or len(request.text) == 0:
+    if len(request.text) > 200 or len(request.text) == 0:
         return { "status": "Error: Text has an invalid length." }
     
     if not db.query(models.Posts).get(request.post_id):

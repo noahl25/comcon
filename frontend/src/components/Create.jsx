@@ -56,7 +56,7 @@ const SetCommunity = ({ setSelectedCommunity, communities }) => {
     return (
         <div className='w-4/5 h-fit flex flex-col gap-3 justify-center items-center'>
             <p className='text-3xl text-center'>select a community to post in</p>
-            <div className='flex flex-row justify-center items-center gap-2'>
+            <div className='flex flex-row flex-wrap justify-center items-center gap-2'>
                 {
                     communities.map((item) => {
                         return <Community key={item} item={item} setSelectedCommunity={setSelectedCommunity} />

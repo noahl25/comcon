@@ -6,9 +6,28 @@ import { ContextMenu } from "./ContextMenu";
 import { Trash } from "lucide-react";
 import { Comments } from "./Comments";
 
+//Underline component to make filter options more clear.
 const DynamicUnderline = ({ state }) => {
 
-	return <motion.div animate={state} transition={{ ease: "easeInOut", duration: 1, type: "spring" }} className="absolute h-[5px] bg-black -bottom-3 rounded-full z-20"/>
+	return <motion.div 
+		initial={{ width: "182.9629669189453px", left: "-16px", opacity: 0 }} 
+		animate={{ 
+			...state, 
+			opacity: 1,
+			transition: {
+				opacity: {
+					opacity: { duration: 1, ease: "easeInOut" }
+				},
+				width: {
+					ease: "easeInOut", duration: 1, type: "spring"
+				},
+				left: {
+					ease: "easeInOut", duration: 1, type: "spring"
+				}
+			}
+		}} 
+		className="absolute h-[5px] bg-black -bottom-3 rounded-full z-20"
+	/>
 
 }
 
@@ -22,6 +41,12 @@ function Activity() {
 	const [contextMenuPosition, setContextMenuPosition] = useState({
 		x: 0,
 		y: 0
+	});
+
+	//Underline state.
+	const [underlineState, setUnderlineState] = useState({
+		width: 0,
+		left: 0
 	});
 
 	const { makeRequest } = useApi();
@@ -41,6 +66,16 @@ function Activity() {
 
 		window.addEventListener("click", onClick);
 
+		//Set initial underline.
+		const item = filterParent.current.querySelector(`.msg:nth-child(1)`);
+		const width = item.getBoundingClientRect().width;
+		const left = item.offsetLeft;
+		setUnderlineState({
+			width,
+			left
+		});
+
+
 		return () => {
 			window.removeEventListener("click", onClick);
 		}
@@ -52,6 +87,8 @@ function Activity() {
 
 		setRender(false);
 
+
+		//Update posts when filter changes.
 		makeRequest(`activity/${filter === 0 ? "get-user-posts" : "get-user-likes-comments"}`, {
 			method: "GET",
 			credentials: "include"
@@ -64,8 +101,12 @@ function Activity() {
 
 	const onContextMenu = (e, item) => {
 
+		//So users don't open context menu when filtering for their likes/comments (and there could be posts from other users).
+		if (filter !== 0) return;
+
 		e.preventDefault();
 
+		//Setup context menu.
 		const deletePost = () => {
 			makeRequest("activity/delete-post", {
 				method: "DELETE",
@@ -86,7 +127,8 @@ function Activity() {
 			{
 				name: "Delete",
 				action: deletePost,
-				icon: <Trash size={25}/>
+				icon: <Trash size={25}/>,
+              	hover: "#f87171"
 			}
 		]
 
@@ -102,24 +144,18 @@ function Activity() {
 	//-1 to not show comments or positive post id to show comments.
 	const [showComments, setShowComments] = useState(-1);
 
-	const [underlineState, setUnderlineState] = useState({
-		width: 0,
-		left: 0
-	});
-
-	//Underline component to make selection more clear.
 	const filterParent = useRef(null);
 
 	const onClickFilter = (itemIndex) => {
-		onChangeFilter(itemIndex);
+		onChangeFilter(itemIndex == 0 ? 0 : 1);
 		const item = filterParent.current.querySelector(`.msg:nth-child(${itemIndex + 1})`);
-		console.log(item)
 		const width = item.getBoundingClientRect().width;
 		const left = item.offsetLeft;
 		setUnderlineState({
 			width,
 			left
 		});
+
 	}
 
 
@@ -130,7 +166,7 @@ function Activity() {
 				{ showComments !== -1 && <Comments postId={showComments} sorted={true} setShowComments={setShowComments}/> }
 			</AnimatePresence>
 			<div className="w-100 md:w-170 mx-auto">
-				<div className="flex justify-center items-center w-full text-nowrap gap-2 relative" ref={filterParent}>
+				<div className="flex mx-auto justify-center items-center w-2/3 text-nowrap gap-2 relative" ref={filterParent}>
 					<motion.p 
 						animate={{ opacity: 1, 
 							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
@@ -145,6 +181,16 @@ function Activity() {
 						your posts
 					</motion.p>
 					<motion.p 
+						animate={{ 
+							opacity: 1, 
+							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
+						}} 
+						initial={{ opacity: 0 }}
+						className="text-4xl text-center mt-7"
+					>
+						|
+					</motion.p>
+					<motion.p 
 						animate={{ opacity: 1, 
 							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
 						}} 
@@ -153,7 +199,7 @@ function Activity() {
 						style={{
 							color: filter == 1 ? "#000000" : "#d6d3d1"
 						}}
-						onClick={() => onClickFilter(1)}
+						onClick={() => onClickFilter(2)}
 					>
 						likes/comments
 					</motion.p>
@@ -179,7 +225,6 @@ function Activity() {
 									transition: {
 										ease: "easeInOut",
 										duration: 1,
-										delay: 0.25
 									}
 								}}
 								exit={{

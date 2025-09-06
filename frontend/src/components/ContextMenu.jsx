@@ -26,7 +26,13 @@ export const ContextMenu = ({ x, y, options}) => {
     >
         {
             options.map((item, index) => {
-                return <div key={index} onClick={item.action} className="flex gap-2 justify-start items-center p-2 w-full hover:text-red-500 transition-all duration-500 ease-in-out">
+                return <div 
+                    key={index} 
+                    onClick={item.action} 
+                    className="flex gap-2 justify-start items-center p-3 w-full transition-all duration-500 ease-in-out border-b-2 border-b-stone-300 last:border-b-0"
+                    onMouseEnter={e => e.currentTarget.style.color = item.hover}
+                    onMouseLeave={e => e.currentTarget.style.color = ""} 
+                >
                     {item.icon}
                     <span className="text-lg relative translate-y-[0.5px]">{item.name}</span>
                 </div>

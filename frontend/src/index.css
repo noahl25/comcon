@@ -17,6 +17,7 @@
 		animation: bounce-right 1s infinite;
 	}
 
+	/* Styles for comments scroll bar. */
 	.scroll-div::-webkit-scrollbar {
 		width: 7px;
 	}
