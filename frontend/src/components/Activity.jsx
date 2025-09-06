@@ -1,10 +1,16 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence, easeIn } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { Post } from "./Post";
 import { useApi } from "../lib/api";
 import { ContextMenu } from "./ContextMenu";
 import { Trash } from "lucide-react";
 import { Comments } from "./Comments";
+
+const DynamicUnderline = ({ state }) => {
+
+	return <motion.div animate={state} transition={{ ease: "easeInOut", duration: 1, type: "spring" }} className="absolute h-[5px] bg-black -bottom-3 rounded-full z-20"/>
+
+}
 
 function Activity() {
 
@@ -96,13 +102,35 @@ function Activity() {
 	//-1 to not show comments or positive post id to show comments.
 	const [showComments, setShowComments] = useState(-1);
 
+	const [underlineState, setUnderlineState] = useState({
+		width: 0,
+		left: 0
+	});
+
+	//Underline component to make selection more clear.
+	const filterParent = useRef(null);
+
+	const onClickFilter = (itemIndex) => {
+		onChangeFilter(itemIndex);
+		const item = filterParent.current.querySelector(`.msg:nth-child(${itemIndex + 1})`);
+		console.log(item)
+		const width = item.getBoundingClientRect().width;
+		const left = item.offsetLeft;
+		setUnderlineState({
+			width,
+			left
+		});
+	}
+
+
+
 	return (
 		<>
 			<AnimatePresence>
 				{ showComments !== -1 && <Comments postId={showComments} sorted={true} setShowComments={setShowComments}/> }
 			</AnimatePresence>
 			<div className="w-100 md:w-170 mx-auto">
-				<div className="flex justify-center items-center w-full text-nowrap gap-2">
+				<div className="flex justify-center items-center w-full text-nowrap gap-2 relative" ref={filterParent}>
 					<motion.p 
 						animate={{ opacity: 1, 
 							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
@@ -111,8 +139,8 @@ function Activity() {
 						style={{
 							color: filter == 0 ? "#000000" : "#d6d3d1"
 						}} 
-						className="text-4xl text-center mt-7 cursor-pointer transition-all duration-500 ease-in-out"
-						onClick={() => onChangeFilter(0)}
+						className="text-4xl text-center mt-7 cursor-pointer transition-all duration-500 ease-in-out msg"
+						onClick={() => onClickFilter(0)}
 					>
 						your posts
 					</motion.p>
@@ -121,16 +149,17 @@ function Activity() {
 							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
 						}} 
 						initial={{ opacity: 0 }} 
-						className="text-4xl text-center mt-7 cursor-pointer transition-all duration-500 ease-in-out"
+						className="text-4xl text-center mt-7 cursor-pointer transition-all duration-500 ease-in-out msg"
 						style={{
 							color: filter == 1 ? "#000000" : "#d6d3d1"
 						}}
-						onClick={() => onChangeFilter(1)}
+						onClick={() => onClickFilter(1)}
 					>
 						likes/comments
 					</motion.p>
+					<DynamicUnderline state={underlineState}/>
 				</div>
-				<motion.p animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }} initial={{ opacity: 0 }} className="text-xl text-center mt-2">right click a post or one of your comments for options.</motion.p> {/* Adding layout prop to prevent scaling issues. */}
+				<motion.p animate={{ opacity: 1, transition: { opacity: { duration: 1, ease: "easeInOut" } } }} initial={{ opacity: 0 }} className="text-xl text-center mt-4">right click a post or one of your comments for options.</motion.p> {/* Adding layout prop to prevent scaling issues. */}
 				{
 					render && <AnimatePresence>
 						{

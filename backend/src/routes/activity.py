@@ -76,8 +76,6 @@ async def get_user_likes_comments(user_id: str = Cookie(None), db: Session = Dep
         for post, community, like_count, like in query
     ]
 
-    print(results)
-
     return results
 
 class DeletePostRequest(BaseModel):
@@ -110,7 +108,6 @@ class DeleteCommentRequest(BaseModel):
 async def delete_comment(request: DeleteCommentRequest, user_id: str = Cookie(None), db: Session = Depends(get_db)):
     
     comment = db.query(models.Comments).filter(models.Comments.id == request.comment_id).first()
-
 
     if not comment:
         return { "status": "Error: comment does not exist." }
