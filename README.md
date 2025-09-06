@@ -37,7 +37,7 @@ For the frontend, run the following commands:
 cd frontend
 npm install
 npm run build
-npm run preview
+npm run preview -- --port 5173
 ```
 
 ## Reflection
