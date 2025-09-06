@@ -59,4 +59,4 @@ Basic rundown of how the site works:
 
 ## Reflection
 
-Throughout this challenge, quite a few issues arose. I challenged myself to fill the site with unique animations and smooth flow, but with that came many problems. I spent a lot time smoothing out the issues and am glad I did, because I'm happy with the final product. I learned a lot about SQL and SQLAlchemy throughout this process. I tried to optimize my queries so I learned a lot about the quirks of SQL and SQLAlchemy, and ways you can simplify problems.
+Throughout this challenge, quite a few issues arose. I challenged myself to fill the site with unique animations and a smooth flow, but with that came many problems. I spent a lot time smoothing out the issues and am glad I did, because I'm happy with the final product. I learned a lot about SQL and SQLAlchemy throughout this process. I tried to optimize my queries so I learned a lot about the quirks of SQL and SQLAlchemy, and ways you can simplify problems.
