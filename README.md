@@ -32,7 +32,7 @@ python server.py
 ```
 Using a virtual environment isn't required but I reccomended it to prevent any issues.  
 
-For the frontend, run the following commands:
+For the frontend, in another terminal, run the following commands:
 ```
 cd frontend
 npm install
