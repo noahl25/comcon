@@ -47,7 +47,9 @@ npm run preview -- --port 5173
 - Images are served locally, so if you want to use the database I included, make sure that you have all the images in the backend/images folder.
 
 Basic rundown of how the site works:
-- You can navigate to the "Explore" page to join a community. You can create your own community by clicking the plus. Creating a community will automatically join it.
+- It's like Reddit/Fizz.
+- You can navigate to the "Explore" page to join a community. There are some community suggestions but you can search for one too. I only included like 10 so I wouldn't search anything too niche.
+- You can create your own community by clicking the plus. Creating a community will automatically join it.
 - You can see your joined communities in the "Feed" page. You can see posts from your communities there as well.
 - Liking and commenting on posts is pretty straightforward. You can right click one of your comments to delete or edit it.
 - You can create posts in the "Create" page.
