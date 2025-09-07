@@ -14,12 +14,16 @@ from ..utils.utils import write_image
 router = APIRouter()
 
 @router.get("/get-communities")
-async def get_communities(q: str, db: Session = Depends(get_db)):
+async def get_communities(q: str, exclude: str | None, db: Session = Depends(get_db)):
+
+    exclude_list = []
+    if exclude:
+        exclude_list = [x.lower() for x in exclude.split(",")]
 
     if q == "random":
-        results = db.query(models.Communities.name).order_by(func.random()).limit(7).all() #Get random community names. (For suggestions)
+        results = db.query(models.Communities.name).filter(~models.Communities.name.in_(exclude_list)).order_by(func.random()).limit(7).all() #Get random community names. (For suggestions)
     else:
-        results = db.query(models.Communities.name).filter(models.Communities.name.ilike(f"%{q}%")).limit(5).all() #Get top 5 matches for community name.
+        results = db.query(models.Communities.name).filter(~models.Communities.name.in_(exclude_list)).filter(models.Communities.name.ilike(f"%{q}%")).limit(5).all() #Get top 5 matches for community name.
 
     return { "names" : [result[0] for result in results] }
 

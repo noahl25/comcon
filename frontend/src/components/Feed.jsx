@@ -12,7 +12,13 @@ const Community = ({ item, setCommunities, setPosts }) => {
 	const bgAnimationControls = useAnimationControls();
 	const checkAnimationControls = useAnimationControls();
 
+	const clicked = useRef(false);
+
 	const onClick = () => { //Start animations on click and add community to cookies.
+
+		if (clicked.current) return;
+
+		clicked.current = true;
 
 		bgAnimationControls.start({
 			height: "100%",

@@ -18,7 +18,7 @@ const NavbarElement = ({ name, setCursorState, onClick }) => {
     }, [])
 
     return <motion.div
-        className='w-fit px-3'
+        className='w-fit px-3 h-full'
         ref={ref}
         onMouseEnter={() => {
             setCursorState({

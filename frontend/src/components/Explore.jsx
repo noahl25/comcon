@@ -58,7 +58,13 @@ const Community = ({ item, setCommunities }) => {
 	const bgAnimationControls = useAnimationControls();
 	const checkAnimationControls = useAnimationControls();
 
+	const clicked = useRef(false);
+
 	const onClick = () => { //Start animations on click and add community to cookies.
+
+		if (clicked.current) return;
+
+		clicked.current = true;
 
 		const oldCookie = getCookie(document, "communities") || "";
 		let newCookie = oldCookie;
@@ -102,7 +108,8 @@ const Community = ({ item, setCommunities }) => {
 			transition: {
 				opacity: {
 					duration: 1,
-					delay: 1
+					delay: 1,
+					ease: "easeInOut"
 				}
 			}
 		}}
@@ -121,7 +128,7 @@ const Community = ({ item, setCommunities }) => {
 		onClick={onClick}
 	>
 		<motion.span layout className='text-black'>{item.toUpperCase()}</motion.span> {/* Adding layout to prevent graphical glitches. */}
-		<motion.span initial={{ height: "0%" }} animate={bgAnimationControls} layout className='absolute left-0 bottom-0 right-0 bg-black'></motion.span>
+		<motion.span layout initial={{ height: "0%" }} animate={bgAnimationControls} className='absolute left-0 bottom-0 right-0 bg-black'></motion.span>
 		<motion.svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check absolute" aria-hidden="true">
 			<motion.path animate={checkAnimationControls} d="M4 12 9 17 20 6" initial={{ pathLength: 0, opacity: 0 }}></motion.path>
 		</motion.svg> {/* Svg copied from Lucide-React */}
@@ -135,42 +142,60 @@ const Communities = ({ mediumDevice, currentSearch }) => {
 
 	const [communities, setCommunities] = useState([]);
 
-	const sendingRequest = useRef(false);
+	const [sendingRequest, setSendingRequest] = useState(false);
 
 	useEffect(() => {
 
+
 		//Get random communities if search is empty or look for existing communities.
-		if (!sendingRequest.current && (communities.length === 0 || currentSearch.length !== 0)) {
-			sendingRequest.current = true;
-			makeRequest(`explore/get-communities?q=${currentSearch == "" ? "random" : currentSearch}`, {
+		if (!sendingRequest && (communities.length === 0 || currentSearch.length !== 0)) {
+			setSendingRequest(true);
+			const cookie = getCookie(document, "communities");
+			makeRequest(`explore/get-communities?q=${currentSearch == "" ? "random" : currentSearch}&exclude=${cookie}`, {
 				method: "GET",
 			}).then((data) => {
-				const cookie = getCookie(document, "communities");
-				let communitiesIn = [];
-				if (cookie) {
-					communitiesIn = cookie.split(",");
-				}
-				setCommunities(data.names.filter(item => !communitiesIn.includes(item))); // Dont include communities that user is already a part of.
+				setCommunities(data.names); 
 			}).finally(() => {
-				sendingRequest.current = false;
+				setSendingRequest(false);
 			});
 		}
 
 	}, [currentSearch, sendingRequest, communities]);
 
 	if (communities.length >= 0) {
-
-		return <motion.div style={{ width: mediumDevice ? '50%' : '30%' }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { visualDuration: 1000 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 justify-center items-start'>
+		return <motion.div style={{ width: mediumDevice ? '50%' : '30%' }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { visualDuration: 1000 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 h-fit justify-center items-start'>
 			<AnimatePresence>
 				{
-					communities.map((item, index) => (
-						<Community key={`${item}`} item={item} setCommunities={setCommunities} />
-					))
+					communities.map((item) => {
+						if (!sendingRequest)
+							return <Community key={`${item}`} item={item} setCommunities={setCommunities} />
+					})
 				}
-				{
-					communities.length === 0 ? <motion.p key="nocommunities" layout initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 0.5, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>no communities found! create one by clicking the plus or find your joined communities in your feed</motion.p>
-						: <motion.p layout key="communities" initial={{ opacity: 0 }} exit={{ opacity: 0, transition: { duration: 0.5 } }} animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1.7, ease: "easeInOut" } } }} className='text-lg w-full text-center mt-[3px] h-fit'>click any community to join it or create one with the plus</motion.p>
-				} {/* display message if no communities found */}
+				<AnimatePresence mode="wait">
+					{
+						communities.length !== 0 ?
+						<motion.p 
+							layout 
+							key="nocommunities" 
+							initial={{ opacity: 0 }} 
+							exit={{ opacity: 0, transition: { duration: 0.5 } }} 
+							animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1, ease: "easeInOut" } } }} 
+							className='text-lg w-full text-center mt-[3px] h-fit'
+						>
+							click any community to join it or create one with the plus
+						</motion.p>
+							: 
+						<motion.p key="communities" 
+							layout 
+							initial={{ opacity: 0 }} 
+							exit={{ opacity: 0, transition: { duration: 0.5 } }} 
+							animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1, ease: "easeInOut" } } }} 
+							className='text-lg w-full text-center mt-[3px] h-fit'
+						>
+							no communities found! create one by clicking the plus or find your joined communities in your feed
+						</motion.p>
+					} {/* display message if no communities found */}
+				</AnimatePresence>
 			</AnimatePresence>
 		</motion.div>
 
