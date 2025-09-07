@@ -96,6 +96,16 @@ const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loa
 	//-1 to not show comments or positive post id to show comments.
 	const [showComments, setShowComments] = useState(-1);
 
+	const bottomRef = useRef(null);
+
+	const bottomInView = useInView(bottomRef,{ once: false });
+
+	useEffect(() => {
+		if (bottomRef.current && bottomInView) {
+			loadMorePosts();
+		}
+	}, [bottomInView]);
+
 	if (communities.length >= 0) {
 
 		return ( 
@@ -153,7 +163,6 @@ const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loa
 									<motion.div 
 										className="text-center pb-13 cursor-pointer text-stone-400" 
 										layout
-										onClick={loadMorePosts}
 										initial={{
 											opacity: 0
 										}}
@@ -205,6 +214,7 @@ const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loa
 									</motion.p>
 								}
 							</AnimatePresence>
+							<motion.div ref={bottomRef} className="w-full h-1"/>
 						</motion.div>
 					</AnimatePresence>
 				</motion.div>
@@ -270,7 +280,7 @@ function Feed() {
 
 	}, [communities])
 
-	const [loadMoreMsg, setLoadMoreMsg] = useState("load more");
+	const [loadMoreMsg, setLoadMoreMsg] = useState("loading more...");
 
 	const loadMorePosts = () => {
 		
@@ -278,7 +288,6 @@ function Feed() {
 
 		const list = getCommunities();
 		const exclude = posts.map(post => post.id);
-			
 
 		makeRequest(`feed/get-posts?communities=${list.join()}&exclude=${exclude.join()}`, {
 			method: "GET",

@@ -10,7 +10,7 @@ import { Comments } from "./Comments";
 const DynamicUnderline = ({ state }) => {
 
 	return <motion.div 
-		initial={{ width: "182.9629669189453px", left: "-16px", opacity: 0 }} 
+		initial={{ width: "182.9629669189453px", left: "-7px", opacity: 0 }} 
 		animate={{ 
 			...state, 
 			opacity: 1,
@@ -74,6 +74,8 @@ function Activity() {
 			width,
 			left
 		});
+
+		console.log(width, left)
 
 
 		return () => {
@@ -181,16 +183,6 @@ function Activity() {
 						your posts
 					</motion.p>
 					<motion.p 
-						animate={{ 
-							opacity: 1, 
-							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
-						}} 
-						initial={{ opacity: 0 }}
-						className="text-4xl text-center mt-7"
-					>
-						|
-					</motion.p>
-					<motion.p 
 						animate={{ opacity: 1, 
 							transition: { opacity: { duration: 1, ease: "easeInOut" } } 
 						}} 
@@ -199,7 +191,7 @@ function Activity() {
 						style={{
 							color: filter == 1 ? "#000000" : "#d6d3d1"
 						}}
-						onClick={() => onClickFilter(2)}
+						onClick={() => onClickFilter(1)}
 					>
 						likes/comments
 					</motion.p>
