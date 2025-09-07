@@ -56,7 +56,7 @@ const Community = ({ item, setCommunities, setPosts }) => {
 	return <motion.div
 		layout
 		className='shadow-lg relative h-fit overflow-hidden rounded-full grid place-items-center bg-white border-3 border-black py-2 px-3 text-lg cursor-pointer'
-		initial={{
+		initial={{ 
 			scale: 1,
 			opacity: 0
 		}}
@@ -96,9 +96,9 @@ const Page = ({ communities, setCommunities, posts, setPosts, loadMorePosts, loa
 	//-1 to not show comments or positive post id to show comments.
 	const [showComments, setShowComments] = useState(-1);
 
+	// If bottom in view then load more posts.
 	const bottomRef = useRef(null);
-
-	const bottomInView = useInView(bottomRef,{ once: false });
+	const bottomInView = useInView(bottomRef, { once: false });
 
 	useEffect(() => {
 		if (bottomRef.current && bottomInView) {
@@ -273,7 +273,6 @@ function Feed() {
 				method: "GET",
 				credentials: "include",
 			}).then((result) => {
-				console.log("here");
 				setPosts(result);
 			})
 		}

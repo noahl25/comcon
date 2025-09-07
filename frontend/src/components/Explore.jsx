@@ -140,7 +140,7 @@ const Communities = ({ mediumDevice, currentSearch }) => {
 	useEffect(() => {
 
 		//Get random communities if search is empty or look for existing communities.
-		if (!sendingRequest.current) {
+		if (!sendingRequest.current && (communities.length === 0 || currentSearch.length !== 0)) {
 			sendingRequest.current = true;
 			makeRequest(`explore/get-communities?q=${currentSearch == "" ? "random" : currentSearch}`, {
 				method: "GET",
@@ -150,14 +150,13 @@ const Communities = ({ mediumDevice, currentSearch }) => {
 				if (cookie) {
 					communitiesIn = cookie.split(",");
 				}
-
 				setCommunities(data.names.filter(item => !communitiesIn.includes(item))); // Dont include communities that user is already a part of.
 			}).finally(() => {
 				sendingRequest.current = false;
 			});
 		}
 
-	}, [currentSearch, sendingRequest]);
+	}, [currentSearch, sendingRequest, communities]);
 
 	if (communities.length >= 0) {
 

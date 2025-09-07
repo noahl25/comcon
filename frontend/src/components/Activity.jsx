@@ -75,9 +75,6 @@ function Activity() {
 			left
 		});
 
-		console.log(width, left)
-
-
 		return () => {
 			window.removeEventListener("click", onClick);
 		}
