@@ -88,8 +88,30 @@ const Community = ({ item, setCommunities, setPosts }) => {
 		}}
 		onClick={onClick}
 	>
-		<motion.span layout className='text-black'>{item.toUpperCase()}</motion.span> {/* Adding layout to prevent graphical glitches. */}
-		<motion.span layout initial={{ height: "0%" }} animate={bgAnimationControls} className='absolute left-0 bottom-0 right-0 bg-black'></motion.span>
+		<motion.span 
+			layout 
+			transition={{
+				layout: {
+					ease: "easeInOut",
+					duration: 0.5
+				}
+			}} 
+			className='text-black'
+		>
+			{item.toUpperCase()}
+		</motion.span>
+		<motion.span 
+			layout 
+			initial={{ height: "0%" }} 
+			animate={bgAnimationControls} 
+			className='absolute left-0 bottom-0 right-0 bg-black'
+			transition={{
+				layout: {
+					ease: "easeInOut",
+					duration: 0.5
+				}
+			}}
+		/>
 		<motion.svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x-icon lucide-x absolute" aria-hidden="true">
 			<motion.path animate={checkAnimationControls} d="M18 6 6 18" initial={{ pathLength: 0, opacity: 0 }} />
 			<motion.path animate={checkAnimationControls} d="m6 6 12 12" initial={{ pathLength: 0, opacity: 0 }} />
