@@ -107,8 +107,8 @@ const Community = ({ item, setCommunities }) => {
 			opacity: 1,
 			transition: {
 				opacity: {
-					duration: 1,
-					delay: 1,
+					duration: 0.5,
+					delay: 0.75,
 					ease: "easeInOut"
 				}
 			}
@@ -227,7 +227,7 @@ const Communities = ({ mediumDevice, currentSearch }) => {
 	}, [currentSearch]);
 
 	if (communities.length >= 0) {
-		return <motion.div style={{ width: mediumDevice ? '50%' : '30%' }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { visualDuration: 1000 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 h-fit justify-center items-start'>
+		return <motion.div style={{ width: mediumDevice ? '50%' : '30%' }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 1 } }} className='flex-none mx-auto mt-4.25 flex flex-wrap gap-2 h-fit justify-center items-start'>
 			<AnimatePresence>
 				{
 					communities.map((item) => {
@@ -241,8 +241,8 @@ const Communities = ({ mediumDevice, currentSearch }) => {
 							layout 
 							key="nocommunities" 
 							initial={{ opacity: 0 }} 
-							exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.75 } }} 
-							animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1, ease: "easeInOut" } } }} 
+							exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.7 } }} 
+							animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 0.7, ease: "easeInOut" } } }} 
 							transition={{
 								layout: {
 									ease: "easeInOut",
@@ -258,7 +258,7 @@ const Communities = ({ mediumDevice, currentSearch }) => {
 							layout 
 							initial={{ opacity: 0 }} 
 							exit={{ opacity: 0, transition: { duration: 0.5 } }} 
-							animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 1, ease: "easeInOut" } } }} 
+							animate={{ opacity: 1, transition: { opacity: { duration: 1, delay: 0.7, ease: "easeInOut" } } }} 
 							transition={{
 								layout: {
 									ease: "easeInOut",
