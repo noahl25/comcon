@@ -48,7 +48,7 @@ npm run preview -- --port 5173
 
 Basic rundown of how the site works:
 - It's like Reddit/Fizz.
-- You can navigate to the "Explore" page to join a community. There are some community suggestions but you can search for one too. I only included like 10 so I wouldn't search anything too niche.
+- You can navigate to the "Explore" page to join a community. There are some community suggestions but you can search for one too. If you want to test the search feature you can go to [communities.md](https://github.com/noahl25/comcon/blob/main/communities.md) to find the existing ones.
 - You can create your own community by clicking the plus. Creating a community will automatically join it.
 - You can see your joined communities in the "Feed" page. You can see posts from your communities there as well.
 - Liking and commenting on posts is pretty straightforward. You can right click one of your comments to delete or edit it.
