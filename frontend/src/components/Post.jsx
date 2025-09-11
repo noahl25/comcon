@@ -110,7 +110,7 @@ export const Post = ({ communityName, communityImage, date, title, image, text, 
 							</div>
 						</div>
 					}
-					<span className={cn("text-lg md:text-2xl font-semibold relative -translate-y-[1.2px]", communityImage ? "" : "ml-2.5")}>{communityName}</span>
+					<span className={cn("text-lg md:text-2xl font-semibold relative -translate-y-[1.2px]", communityImage ? "ml-0.5" : "ml-2.5")}>{communityName}</span>
 				</div>
 				<span className="ml-0 md:ml-auto">{date}</span>
 			</div>

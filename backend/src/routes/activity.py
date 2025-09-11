@@ -9,6 +9,7 @@ from ..database import models
 
 router = APIRouter()
 
+#Get user's posts.
 @router.get("/get-user-posts")
 async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_db)):
 
@@ -21,8 +22,8 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
             .outerjoin(models.Likes, models.Likes.post_id == models.Posts.id)
             .filter(models.Posts.user_id == user_id)
             .group_by(models.Posts.id)
-            .add_column(func.count(models.Likes.id))
-            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)))
+            .add_column(func.count(models.Likes.id).label("like_count"))
+            .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)).label("user_liked"))
             .all()
     )
 
@@ -43,6 +44,7 @@ async def get_user_posts(user_id: str = Cookie(None), db: Session = Depends(get_
 
     return results
 
+#Get posts user liked or commented on.
 @router.get("/get-user-likes-comments")
 async def get_user_likes_comments(user_id: str = Cookie(None), db: Session = Depends(get_db)):
 
@@ -56,7 +58,7 @@ async def get_user_likes_comments(user_id: str = Cookie(None), db: Session = Dep
             .outerjoin(models.Comments, models.Comments.post_id == models.Posts.id)
             .filter(or_(models.Likes.user_id == user_id, models.Comments.user_id == user_id))
             .group_by(models.Posts.id)
-            .add_column(func.count(models.Likes.id))
+            .add_column(func.count(func.distinct(models.Likes.id)))
             .add_column(func.max(case((models.Likes.user_id == user_id, 1), else_=0)))
             .all() 
     )

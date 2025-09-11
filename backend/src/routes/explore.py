@@ -13,6 +13,7 @@ from ..utils.utils import write_image
 
 router = APIRouter()
 
+#Get random suggestions or matching search.
 @router.get("/get-communities")
 async def get_communities(q: str, exclude: str | None, db: Session = Depends(get_db)):
 
