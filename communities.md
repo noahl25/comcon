@@ -1,0 +1,11 @@
+## Existing Communities
+- Music
+- Gaming
+- Movies
+- American Football
+- Art
+- Science
+- Soccer
+- Gambling
+- Baking
+- Vanderbilt
