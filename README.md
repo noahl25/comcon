@@ -40,7 +40,7 @@ npm run preview -- --port 5173
 
 ## Important Notes
 
-- **Your user ID is connected to your browser cookies. If you want to test multiple users, opening the project in another browser or a different profile will allow you to do so. User activity should be persistent unless cookies are cleared.**
+- **Your user ID is connected to your (http only) browser cookies. If you want to test multiple users, opening the project in another browser or a different profile will allow you to do so. User activity should be persistent unless cookies are cleared.**
 - I included a database that already has some content in it, so you should be able to see communities and posts immediately.
 - Images are served locally, so if you want to use the database I included, make sure that you have all the images in the backend/images folder.
 
