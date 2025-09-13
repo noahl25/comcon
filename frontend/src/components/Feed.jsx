@@ -78,7 +78,8 @@ const Community = ({ item, setCommunities, setPosts }) => {
 			scale: 1.05
 		}}
 		transition={{
-			ease: "easeInOut"
+			ease: "easeInOut",
+			duration: 0.5
 		}}
 		exit={{
 			scale: 0,
@@ -104,7 +105,7 @@ const Community = ({ item, setCommunities, setPosts }) => {
 			layout 
 			initial={{ height: "0%" }} 
 			animate={bgAnimationControls} 
-			className='absolute left-0 bottom-0 right-0 bg-black'
+			className='absolute -left-5 bottom-0 right-5 bg-black'
 			transition={{
 				layout: {
 					ease: "easeInOut",
