@@ -14,7 +14,9 @@ The backend is Python with FastAPI and SQLAlchemy.
 
 ## How to Run
 
-First, make sure you have NodeJS and Python 3.0+ installed.  
+First, make sure you have NodeJS and Python 3.0+ installed.
+
+**Please note that the middleware is only configured to accept requests from port 5173. So please run the frontend on port 5173.**
 
 I included two batch files, [backend.bat](https://github.com/noahl25/comcon/blob/main/backend.bat) and [frontend.bat](https://github.com/noahl25/comcon/blob/main/frontend.bat), which should install the correct packages and run both the frontend and backend. Just open two terminals in the root directory and run both.
 
