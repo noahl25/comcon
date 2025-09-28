@@ -2,11 +2,6 @@
 
 A lightweight social media platform where people can discover what is happpening in the communities they love. Made in 2 weeks for the 2025 Vanderbilt Change++ application.
 
-## Contact
-
-Name: Noah Lisin  
-Email: noah.g.lisin@vanderbilt.edu
-
 ## Technologies Used
 
 The frontend is primarily React, TailwindCSS, and framer-motion.  
@@ -40,23 +35,3 @@ npm run build
 npm run preview -- --port 5173
 ```
 
-## Important Notes
-
-- **Your user ID is connected to your (http only) browser cookies. If you want to test multiple users, opening the project in another browser or a different profile will allow you to do so. User activity should be persistent unless cookies are cleared.**
-- I included a database that already has some content in it, so you should be able to see communities and posts immediately.
-- Images are served locally, so if you want to use the database I included, make sure that you have all the images in the backend/images folder.
-
-Basic rundown of how the site works:
-- It's like Reddit/Fizz.
-- You can navigate to the "Explore" page to join a community. There are some community suggestions but you can search for one too. If you want to test the search feature you can go to [communities.md](https://github.com/noahl25/comcon/blob/main/communities.md) to find the existing ones.
-- You can create your own community by clicking the plus. Creating a community will automatically join it.
-- You can see your joined communities in the "Feed" page. You can see posts from your communities there as well.
-- Liking and commenting on posts is pretty straightforward. You can right click one of your comments to delete or edit it.
-- You can create posts in the "Create" page.
-- You can then see your posts in the "Activity" page.
-- In the "Activity" page you can click on either "your posts" to see your posts or "likes/comments" to see posts you've liked or commented on.
-- Right click one of your posts to delete it.
-
-## Reflection
-
-Throughout this challenge, quite a few issues arose. I challenged myself to fill the site with unique animations and a smooth flow, but with that came many problems. I spent a lot time smoothing out the issues and am glad I did, because I'm happy with the final product. I learned a lot about SQL and SQLAlchemy throughout this process. I tried to optimize my queries so I learned a lot about the quirks of SQL and SQLAlchemy, and ways you can simplify problems.
