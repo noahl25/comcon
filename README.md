@@ -2,11 +2,6 @@
 
 A lightweight social media platform where people can discover what is happpening in the communities they love. Made in 2 weeks for the 2025 Vanderbilt Change++ application.
 
-## Contact
-
-Name: Noah Lisin  
-Email: noah.g.lisin@vanderbilt.edu
-
 ## Technologies Used
 
 The frontend is primarily React, TailwindCSS, and framer-motion.  
