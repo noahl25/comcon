@@ -35,3 +35,7 @@ npm run build
 npm run preview -- --port 5173
 ```
 
+## Screenshots
+
+<img width="2537" height="1255" alt="Screenshot 2025-09-28 004201" src="https://github.com/user-attachments/assets/50fcd828-6596-4cd6-b17e-6e140a3f1904" />
+<img width="2558" height="1262" alt="Screenshot 2025-09-28 003849" src="https://github.com/user-attachments/assets/51a72d8b-3323-467d-911c-0790085424b5" />
