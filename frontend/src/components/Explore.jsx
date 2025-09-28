@@ -144,7 +144,7 @@ const Community = ({ item, setCommunities }) => {
 			layout 
 			initial={{ height: "0%" }} 
 			animate={bgAnimationControls} 
-			className='absolute -left-5 bottom-0 right-5 bg-black'
+			className='absolute -left-5 bottom-0 -right-5 bg-black'
 			transition={{
 				layout: {
 					ease: "easeInOut",

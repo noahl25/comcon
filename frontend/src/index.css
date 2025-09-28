@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @layer base {
+
 	:root {
 		font-family: 'Lexend', Times, serif;
 		background-color: oklch(98.5% 0.001 106.423);
@@ -8,7 +9,6 @@
 		scrollbar-gutter: stable;
 	}
 
- 
 }
 
 @layer utilities {
